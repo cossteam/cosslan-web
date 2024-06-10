@@ -1,0 +1,61 @@
+{
+  "page": {
+    "index": "Home",
+    "about": "About",
+    "contact": "Contact",
+    "login": "Login",
+    "error404": "Error 404",
+    "error500": "Error 500",
+    "manage": {
+      "overview": "Overview",
+      "machines": "Machines",
+      "nodes": "Nodes",
+      "support": {
+        "index": "Support",
+        "contact": "Contact us",
+        "downloads": "Downloads"
+      },
+      "settings": {
+        "profile": "Profile Settings",
+        "account": "Account Settings",
+        "security": "Security Settings",
+        "appearance": "Appearance Settings",
+        "notifications": "Notification Settings"
+      }
+    }
+  },
+  "theme": {
+    "dark": "Dark",
+    "light": "Light",
+    "system": "System"
+  },
+  "alert":{
+    "success": "Success",
+    "error": "Error",
+    "warning": "Warning",
+    "info": "Info",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "continue": "Continue",
+    "ok": "OK"
+  },
+  "user": {
+    "login": "Login",
+    "logout": "Logout",
+    "loginDescription": "Login to your account.",
+    "email": "Email",
+    "password": "Password",
+    "forgotPassword": "Forgot your password?",
+    "loginWithGithub": "Login with GitHub",
+    "dontHaveAccount": "Don't have an account?",
+    "register": "Register",
+    "registerDescription": "Register to create an account.",
+    "passwordConfirm": "Confirm Password",
+    "alreadyHaveAccount": "Already have an account?",
+    "forgotPasswordDescription": "Please contact customer service.",
+
+    "signIn": "Sign In",
+    "signUp": "Sign Up",
+    "signOut": "Sign Out"
+  }
+}
