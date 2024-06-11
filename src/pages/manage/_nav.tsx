@@ -83,7 +83,7 @@ const ManageNav = () => {
                     </Button>
                     <AccordionContent className="p-4 flex flex-col space-y-3">
                       {item.children.map((child, key) => (
-                        <Link key={key} to={child.href} className="text-sm font-normal text-slate-400 hover:text-slate-100">{child.title}</Link>
+                        <Link key={key} to={child.href} className="text-sm font-normal opacity-60 hover:opacity-80">{child.title}</Link>
                       ))}
                     </AccordionContent>
                   </AccordionItem>

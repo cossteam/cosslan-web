@@ -50,7 +50,7 @@
     "dontHaveAccount": "Don't have an account?",
     "register": "Register",
     "registerDescription": "Register to create an account.",
-    "passwordConfirm": "Confirm Password",
+    "confirmPassword": "Confirm Password",
     "alreadyHaveAccount": "Already have an account?",
     "forgotPasswordDescription": "Please contact customer service.",
 
