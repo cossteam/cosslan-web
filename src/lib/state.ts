@@ -1,19 +1,19 @@
 import {create} from 'zustand';
-import {persist, createJSONStorage} from 'zustand/middleware'
+import {persist, createJSONStorage, subscribeWithSelector} from 'zustand/middleware'
 
 const userState = create(
-  persist(
+  subscribeWithSelector(persist(
     () => ({
       email: '',
-      login: {
-        email: '',
-      }
+
+      ext_login_email: '',
+      ext_outing: '',
     }),
     {
       name: 'store_user',
       storage: createJSONStorage(() => localStorage),
     },
-  ),
+  ))
 )
 
 const uiState = create(

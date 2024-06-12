@@ -127,7 +127,7 @@ const ManageNav = () => {
                 <Link to="/manage/settings">User settings</Link>
               </Button>
               <Button variant="ghost" asChild className="justify-start -mx-2" onClick={() => setOpenUserAvatar(false)}>
-                <Link to="/logout">Logout</Link>
+                <Link to="#" onClick={() => userState.setState({ext_outing: new Date().toString()})}>Logout</Link>
               </Button>
             </div>
           </PopoverContent>

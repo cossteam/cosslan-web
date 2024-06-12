@@ -62,7 +62,7 @@ const Login = () => {
   type LoginFormValues = z.infer<typeof loginFormSchema>
 
   const defaultValues: Partial<LoginFormValues> = {
-    email: userState.getState().email || "admin@email.com",
+    email: userState.getState().ext_login_email || "admin@email.com",
     password: "",
     confirmPassword: "",
   }
@@ -75,9 +75,7 @@ const Login = () => {
   const onSubmit = (data: LoginFormValues) => {
     userState.setState({
       email: data.email,
-      login: {
-        email: data.email
-      }
+      ext_login_email: data.email
     });
     navigate("/manage");
   }
