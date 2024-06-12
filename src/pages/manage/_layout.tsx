@@ -21,16 +21,10 @@ const ManageLayout = () => {
 
   useEffect(() => {
     userState.subscribe(
-      state => [state.email, state.ext_outing],
-      ([email, ext_outing]) => {
-        if (!email) {
-          // 身份失效
+      state => state.user_id,
+      user_id => {
+        if (user_id === 0) {  // 身份失效
           navigate("/login");
-        }
-        if (ext_outing) {
-          // 主动登出
-          userState.setState({ext_outing: ''});
-          setLogoutDialogOpen(true);
         }
       },
       {

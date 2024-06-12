@@ -16,4 +16,5 @@ const ManageNodes = () => {
     </div>
   );
 }
+
 export default ManageNodes;

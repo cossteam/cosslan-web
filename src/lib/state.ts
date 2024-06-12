@@ -4,10 +4,8 @@ import {persist, createJSONStorage, subscribeWithSelector} from 'zustand/middlew
 const userState = create(
   subscribeWithSelector(persist(
     () => ({
+      user_id: 0,
       email: '',
-
-      ext_login_email: '',
-      ext_outing: '',
     }),
     {
       name: 'store_user',

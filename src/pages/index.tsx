@@ -12,7 +12,8 @@ const Index = () => {
       navigate("/login");
     }
   });
-  return (<></>)
+
+  return null
 }
 
 export default Index;

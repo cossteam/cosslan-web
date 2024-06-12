@@ -7,11 +7,11 @@ const Logout = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    userState.setState({email: ''})
+    userState.setState({user_id: 0})
     navigate("/login");
   });
 
-  return (<></>)
+  return null
 }
 
 export default Logout

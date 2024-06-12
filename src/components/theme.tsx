@@ -11,50 +11,44 @@ import {useTranslation} from "react-i18next"
 import {useEffect, useState} from "react"
 import {uiState} from "@/lib/state.ts";
 
-const ThemeList: string[] = ['light', 'dark', 'system'];
-const ThemeConfig = {
-  default: uiState.getState().theme || 'system',
-  current: '',
-  setTheme: (theme: string) => {
-    updateTheme(theme)
-  }
-}
-
-export {ThemeList, ThemeConfig}
-
 const updateTheme = (theme: string) => {
-  uiState.setState({theme: theme})
-
-  let themeName = theme
-  if (themeName === "system") {
-    themeName = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"
+  uiState.setState({theme})
+  if (theme === "system") {
+    theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"
   }
-  if (ThemeConfig.current === themeName) return
-
   const root = window.document.documentElement
   root.classList.remove("light", "dark")
-  root.classList.add(ThemeConfig.current = themeName)
+  root.classList.add(theme)
 }
-updateTheme(ThemeConfig.default)
 
-export function ThemeToggle({showLabel = false}) {
+const ThemeList: string[] = ['light', 'dark', 'system'];
+const ThemeTool = {
+  default: uiState.getState().theme || 'system',
+  setTheme: updateTheme
+}
+
+export {ThemeList, ThemeTool}
+
+export function ThemeInit() {
+  updateTheme(ThemeTool.default)
+  return null
+}
+
+export function Theme({showLabel = false}) {
   const {t} = useTranslation()
-  const [themeName, setTheme] = useState<string>(ThemeConfig.current)
-
-  ThemeConfig.setTheme = setTheme
+  const [themeName, setThemeName] = useState<string>(ThemeTool.default)
+  ThemeTool.setTheme = setThemeName
 
   useEffect(() => updateTheme(themeName), [themeName])
 
-  const isChecked = (name: string) => name === themeName
-
   const themeLabel = (theme: string) => {
-    return `theme.${theme}` as 'theme.light' | 'theme.dark' | 'theme.system'
+    return t(`theme.${theme}` as 'theme.light' | 'theme.dark' | 'theme.system')
   }
 
   const menuItems = ThemeList.map((theme) => {
     return (
-      <DropdownMenuCheckboxItem key={theme} checked={isChecked(theme)} onClick={() => ThemeConfig.setTheme(theme)}>
-        {t(themeLabel(theme))}
+      <DropdownMenuCheckboxItem key={theme} checked={theme === themeName} onClick={() => ThemeTool.setTheme(theme)}>
+        {themeLabel(theme)}
       </DropdownMenuCheckboxItem>
     )
   })
@@ -68,7 +62,7 @@ export function ThemeToggle({showLabel = false}) {
             :
             <Moon className="h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100"/>
           }
-          {showLabel && <span className="pl-2">{t(themeLabel(themeName))}</span>}
+          {showLabel && <span className="pl-2">{themeLabel(themeName)}</span>}
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="min-w-[6rem]">

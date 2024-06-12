@@ -1,5 +1,6 @@
 import path from "path"
 import react from "@vitejs/plugin-react"
+import pages from 'vite-plugin-pages'
 import { defineConfig } from "vite"
 
 export default defineConfig({
@@ -7,7 +8,10 @@ export default defineConfig({
     host: '0.0.0.0',
     strictPort: false,
   },
-  plugins: [react()],
+  plugins: [
+    react(),
+    pages()
+  ],
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),

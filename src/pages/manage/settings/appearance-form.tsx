@@ -14,9 +14,8 @@ import {
 } from "@/components/ui/form"
 import {RadioGroup, RadioGroupItem} from "@/components/ui/radio-group"
 import {Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select.tsx";
-import {LanguageList} from "@/components/language-toggle.tsx";
-import {ThemeList, ThemeConfig} from "@/components/theme-toggle.tsx";
-import {setLanguage} from "@/i18n/config.ts";
+import {LanguageTool, LanguageList} from "@/components/language.tsx";
+import {ThemeList, ThemeTool} from "@/components/theme.tsx";
 import {uiState} from "@/lib/state.ts";
 import {useToast} from "@/components/ui/use-toast.ts";
 
@@ -47,8 +46,8 @@ export function AppearanceForm() {
   })
 
   async function onSubmit(data: AppearanceFormValues) {
-    ThemeConfig.setTheme(data.theme);
-    await setLanguage(data.language);
+    ThemeTool.setTheme(data.theme);
+    LanguageTool.setLanguage(data.language);
     toast({
       description: "Update successful.",
     })

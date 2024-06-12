@@ -2,7 +2,6 @@ import React from "react";
 import {cn} from "@/lib/utils"
 import {buttonVariants} from "@/components/ui/button"
 import {Link, useLocation} from "react-router-dom";
-import {userState} from "@/lib/state.ts";
 
 type navItem = {
   title: string;
@@ -30,13 +29,6 @@ const navItems: navItem[] = [
 
 export function SettingsNav({className, ...props}: React.HTMLAttributes<HTMLElement>) {
   const location = useLocation();
-  const onClick = (item: navItem, event: React.MouseEvent<HTMLAnchorElement>) => {
-    if (item.href === "/logout") {
-      userState.setState({ext_outing: new Date().toString()})
-      event.preventDefault()
-      return
-    }
-  }
 
   return (
     <nav
@@ -50,7 +42,6 @@ export function SettingsNav({className, ...props}: React.HTMLAttributes<HTMLElem
         <Link
           key={item.href}
           to={item.href}
-          onClick={(event) => onClick(item, event)}
           className={cn(
             buttonVariants({variant: "ghost"}),
             location.pathname === item.href

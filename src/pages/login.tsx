@@ -19,8 +19,8 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import {Input} from "@/components/ui/input"
-import {ThemeToggle} from "@/components/theme-toggle";
-import {LanguageToggle} from "@/components/language-toggle";
+import {Theme} from "@/components/theme.tsx";
+import {Language} from "@/components/language.tsx";
 import {useState} from "react";
 import {useTranslation} from "react-i18next";
 import {z} from "zod";
@@ -28,11 +28,13 @@ import {Form, FormControl, FormField, FormItem, FormLabel, FormMessage} from "@/
 import {useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {userState} from "@/lib/state.ts";
+import {Loader2} from "lucide-react";
 
 const Login = () => {
   const navigate = useNavigate();
   const {t} = useTranslation();
   const [isReg, setIsReg] = useState<boolean>(false);
+  const [isLoad, setIsLoad] = useState<boolean>(false);
 
   const loginFormSchema = z.object({
     email: z
@@ -62,7 +64,7 @@ const Login = () => {
   type LoginFormValues = z.infer<typeof loginFormSchema>
 
   const defaultValues: Partial<LoginFormValues> = {
-    email: userState.getState().ext_login_email || "admin@email.com",
+    email: userState.getState().email || "",
     password: "",
     confirmPassword: "",
   }
@@ -74,17 +76,21 @@ const Login = () => {
 
   const onSubmit = (data: LoginFormValues) => {
     userState.setState({
+      user_id: 1,
       email: data.email,
-      ext_login_email: data.email
     });
-    navigate("/manage");
+    setIsLoad(true);
+    setTimeout(() => {
+      setIsLoad(true);
+      navigate("/manage");
+    }, 1000)
   }
 
   return (
     <div className="flex flex-col justify-center items-center h-screen relative">
       <div className="absolute space-x-3 top-4 right-4 flex justify-center items-center">
-        <ThemeToggle/>
-        <LanguageToggle/>
+        <Theme/>
+        <Language/>
       </div>
       <Card className="w-full max-w-sm max-sm:border-0">
         <CardHeader>
@@ -161,7 +167,10 @@ const Login = () => {
                   )}
                 />
               )}
-              <Button type="submit" className="w-full">
+              <Button disabled={isLoad} type="submit" className="w-full">
+                {isLoad && (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin"/>
+                )}
                 {t(isReg ? 'user.register' : 'user.login')}
               </Button>
             </form>

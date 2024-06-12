@@ -19,14 +19,42 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover"
 import {Button} from "@/components/ui/button"
-import NavNetwork from "@/pages/manage/_network.tsx";
 import {useState} from "react";
 import {cn} from "@/lib/utils.ts";
 import {userState} from "@/lib/state.ts";
+import * as React from "react";
+import {CaretSortIcon, CheckIcon, PlusCircledIcon} from "@radix-ui/react-icons";
+import {Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList, CommandSeparator} from "@/components/ui/command.tsx";
+import {Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger} from "@/components/ui/dialog.tsx";
+import {Label} from "@/components/ui/label.tsx";
+import {Input} from "@/components/ui/input.tsx";
+
+const networkGroups = [
+  {
+    label: "Networks",
+    networks: [
+      {
+        label: "100.100.0.0/22",
+        value: "network-BCGOPNGO36TFI6FRYPTFIGAKWI",
+      },
+      {
+        label: "100.200.0.0/22",
+        value: "network-CDGOPNGO36TFI6FRYPTFIGAKWI",
+      },
+    ],
+  },
+]
 
 const ManageNav = () => {
-  const location = useLocation();
   const {t} = useTranslation();
+  const location = useLocation();
+
+  const [networkOpen, setNetworkOpen] = React.useState(false)
+  const [networkDialog, setNetworkDialog] = React.useState(false)
+  const [networkSelected, setNetworkSelected] = React.useState(
+    networkGroups[0].networks[0]
+  )
+
   const [openUserAvatar, setOpenUserAvatar] = useState(false)
 
   const navItems = [
@@ -68,7 +96,96 @@ const ManageNav = () => {
         </div>
       </div>
 
-      <NavNetwork className="shrink-0 w-full border-0 rounded-none border-b pr-3"/>
+      <Dialog open={networkDialog} onOpenChange={setNetworkDialog}>
+        <Popover open={networkOpen} onOpenChange={setNetworkOpen}>
+          <PopoverTrigger asChild>
+            <Button
+              variant="outline"
+              role="combobox"
+              aria-expanded={networkOpen}
+              aria-label="Select a network"
+              className="justify-between shrink-0 w-full border-0 rounded-none border-b pr-3"
+            >
+              <div className="mr-2 max-w-full truncate opacity-80">
+                Network: {networkSelected.label}
+              </div>
+              <CaretSortIcon className="ml-auto h-4 w-4 shrink-0 opacity-50"/>
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-[200px] p-0">
+            <Command>
+              <CommandList>
+                <CommandInput placeholder="Search network..."/>
+                <CommandEmpty>No network found.</CommandEmpty>
+                {networkGroups.map((group) => (
+                  <CommandGroup key={group.label} heading={group.label}>
+                    {group.networks.map((network) => (
+                      <CommandItem
+                        key={network.value}
+                        onSelect={() => {
+                          setNetworkSelected(network)
+                          setNetworkOpen(false)
+                        }}
+                        className="text-sm"
+                      >
+                        <div className="truncate">
+                          {network.label}
+                        </div>
+                        <CheckIcon
+                          className={cn(
+                            "ml-auto h-4 w-4 shrink-0",
+                            networkSelected.value === network.value
+                              ? "opacity-100"
+                              : "opacity-0"
+                          )}
+                        />
+                      </CommandItem>
+                    ))}
+                  </CommandGroup>
+                ))}
+              </CommandList>
+              <CommandSeparator/>
+              <CommandList>
+                <CommandGroup>
+                  <DialogTrigger asChild>
+                    <CommandItem
+                      onSelect={() => {
+                        setNetworkOpen(false)
+                        setNetworkDialog(true)
+                      }}
+                    >
+                      <PlusCircledIcon className="mr-2 h-5 w-5"/>
+                      Create Network
+                    </CommandItem>
+                  </DialogTrigger>
+                </CommandGroup>
+              </CommandList>
+            </Command>
+          </PopoverContent>
+        </Popover>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Create network</DialogTitle>
+            <DialogDescription>
+              Add a new network to manage machines and nodes.
+            </DialogDescription>
+          </DialogHeader>
+          <div>
+            <div className="space-y-4 py-2 pb-4">
+              <div className="space-y-2">
+                <Label htmlFor="name">Network name</Label>
+                <Input id="name" placeholder="Home Work"/>
+              </div>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setNetworkDialog(false)}>
+              Cancel
+            </Button>
+            <Button type="submit">Create</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       <div className="flex-1 space-y-4 py-4 overflow-y-auto overflow-x-hidden">
         <div className="px-3 space-y-1">
@@ -76,7 +193,7 @@ const ManageNav = () => {
             if (item.children) {
               return (
                 <Accordion type="single" collapsible key={key}>
-                <AccordionItem value={item.href} className="border-b-0">
+                  <AccordionItem value={item.href} className="border-b-0">
                     <Button variant={location.pathname === item.href ? 'secondary' : 'ghost'} className="w-full justify-start hover:no-underline" asChild>
                       <AccordionTrigger>
                         <div className="flex-1 text-left">{item.title}</div>
@@ -127,7 +244,7 @@ const ManageNav = () => {
                 <Link to="/manage/settings">User settings</Link>
               </Button>
               <Button variant="ghost" asChild className="justify-start -mx-2" onClick={() => setOpenUserAvatar(false)}>
-                <Link to="#" onClick={() => userState.setState({ext_outing: new Date().toString()})}>Logout</Link>
+                <Link to="/logout">Logout</Link>
               </Button>
             </div>
           </PopoverContent>
@@ -136,4 +253,5 @@ const ManageNav = () => {
     </nav>
   );
 }
+
 export default ManageNav;
