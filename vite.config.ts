@@ -15,6 +15,7 @@ export default defineConfig({
     react(),
     pages({
       importMode: 'sync',
+      exclude: ['**/_*.tsx'],
     })
   ],
   resolve: {

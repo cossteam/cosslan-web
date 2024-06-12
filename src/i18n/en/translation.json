@@ -8,6 +8,7 @@
     "error500": "Error 500",
     "loading": "Loading",
     "manage": {
+      "index": "Overview",
       "overview": "Overview",
       "machines": "Machines",
       "nodes": "Nodes",
@@ -17,6 +18,7 @@
         "downloads": "Downloads"
       },
       "settings": {
+        "index": "Account Settings",
         "account": "Account Settings",
         "security": "Security Settings",
         "appearance": "Appearance Settings",

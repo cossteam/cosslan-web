@@ -83,7 +83,7 @@ const Login = () => {
     setTimeout(() => {
       setIsLoad(true);
       navigate("/manage");
-    }, 1000)
+    }, 600)
   }
 
   return (

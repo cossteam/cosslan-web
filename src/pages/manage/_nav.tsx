@@ -1,4 +1,4 @@
-import {Link, useLocation} from "react-router-dom";
+import {Link, useLocation, useNavigate} from "react-router-dom";
 import {useTranslation} from "react-i18next";
 import {Terminal} from "lucide-react"
 
@@ -20,7 +20,7 @@ import {
 } from "@/components/ui/popover"
 import {Button} from "@/components/ui/button"
 import {useState} from "react";
-import {cn} from "@/lib/utils.ts";
+import {cn} from "@/lib/utils";
 import {userState} from "@/lib/state.ts";
 import * as React from "react";
 import {CaretSortIcon, CheckIcon, PlusCircledIcon} from "@radix-ui/react-icons";
@@ -28,6 +28,7 @@ import {Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandL
 import {Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger} from "@/components/ui/dialog.tsx";
 import {Label} from "@/components/ui/label.tsx";
 import {Input} from "@/components/ui/input.tsx";
+import {alerter} from "@/components/ui+/use-alert.ts";
 
 const networkGroups = [
   {
@@ -48,6 +49,7 @@ const networkGroups = [
 const ManageNav = () => {
   const {t} = useTranslation();
   const location = useLocation();
+  const navigate = useNavigate();
 
   const [networkOpen, setNetworkOpen] = React.useState(false)
   const [networkDialog, setNetworkDialog] = React.useState(false)
@@ -56,6 +58,18 @@ const ManageNav = () => {
   )
 
   const [openUserAvatar, setOpenUserAvatar] = useState(false)
+
+  const onLogout = (event: React.MouseEvent<HTMLAnchorElement>) => {
+    event.preventDefault()
+    alerter({
+      title: "Logout",
+      description: "Are you sure you want to logout?",
+      onOk: () => {
+        userState.setState({user_id: 0})
+        navigate("/login");
+      },
+    })
+  }
 
   const navItems = [
     {
@@ -244,7 +258,7 @@ const ManageNav = () => {
                 <Link to="/manage/settings">User settings</Link>
               </Button>
               <Button variant="ghost" asChild className="justify-start -mx-2" onClick={() => setOpenUserAvatar(false)}>
-                <Link to="/logout">Logout</Link>
+                <Link to="/logout" onClick={onLogout}>Logout</Link>
               </Button>
             </div>
           </PopoverContent>

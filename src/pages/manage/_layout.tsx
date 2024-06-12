@@ -1,7 +1,6 @@
 import ManageNav from "@/pages/manage/_nav.tsx";
 import {Outlet, useNavigate} from "react-router-dom";
-import {useEffect, useState} from "react";
-import {userState} from "@/lib/state.ts";
+import {useState} from "react";
 import {Toaster} from "@/components/ui/toaster.tsx";
 
 import {
@@ -18,20 +17,6 @@ import {
 const ManageLayout = () => {
   const navigate = useNavigate();
   const [logoutDialogOpen, setLogoutDialogOpen] = useState(false);
-
-  useEffect(() => {
-    userState.subscribe(
-      state => state.user_id,
-      user_id => {
-        if (user_id === 0) {  // 身份失效
-          navigate("/login");
-        }
-      },
-      {
-        fireImmediately: true,
-      }
-    )
-  })
 
   return (
     <>
