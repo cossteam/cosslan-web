@@ -23,8 +23,9 @@ const LanguageTool = {
     if (LanguageList.find(item => item.type === language) === undefined) {
       language = LanguageList[0].type
     }
+    uiState.setState({language})
+    //
     updateLanguage(language).then(() => {
-      uiState.setState({language})
     })
   }
 }

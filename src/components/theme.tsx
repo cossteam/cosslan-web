@@ -11,35 +11,44 @@ import {useTranslation} from "react-i18next"
 import {useEffect, useState} from "react"
 import {uiState} from "@/lib/state.ts";
 
-const updateTheme = (theme: string) => {
-  uiState.setState({theme})
-  if (theme === "system") {
-    theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"
-  }
-  const root = window.document.documentElement
-  root.classList.remove("light", "dark")
-  root.classList.add(theme)
-}
-
-const ThemeList: string[] = ['light', 'dark', 'system'];
+const ThemeList: string[] = [
+  'light',
+  'dark',
+  'system'
+];
 const ThemeTool = {
   default: uiState.getState().theme || 'system',
-  setTheme: updateTheme
+  setTheme: (theme: string) => {
+    if (!ThemeList.includes(theme)) {
+      theme = ThemeList[0]
+    }
+    uiState.setState({theme})
+    //
+    if (theme === "system") {
+      theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"
+    }
+    const root = window.document.documentElement
+    root.classList.remove("light", "dark")
+    root.classList.add(theme)
+  }
 }
 
 export {ThemeList, ThemeTool}
 
 export function ThemeInit() {
-  updateTheme(ThemeTool.default)
+  ThemeTool.setTheme(ThemeTool.default)
   return null
 }
 
 export function Theme({showLabel = false}) {
   const {t} = useTranslation()
   const [themeName, setThemeName] = useState<string>(ThemeTool.default)
-  ThemeTool.setTheme = setThemeName
 
-  useEffect(() => updateTheme(themeName), [themeName])
+  useEffect(() => {
+    uiState.subscribe(({theme}) => {
+      setThemeName(theme)
+    })
+  }, [themeName])
 
   const themeLabel = (theme: string) => {
     return t(`theme.${theme}` as 'theme.light' | 'theme.dark' | 'theme.system')

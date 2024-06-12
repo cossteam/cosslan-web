@@ -35,7 +35,7 @@ const accountFormSchema = z.object({
 
 type AccountFormValues = z.infer<typeof accountFormSchema>
 
-export function AccountForm() {
+export default function AccountForm() {
 
   const defaultValues: Partial<AccountFormValues> = {
     name: "",

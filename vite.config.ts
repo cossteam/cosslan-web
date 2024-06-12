@@ -8,9 +8,14 @@ export default defineConfig({
     host: '0.0.0.0',
     strictPort: false,
   },
+  build: {
+    chunkSizeWarningLimit: 1500,
+  },
   plugins: [
     react(),
-    pages()
+    pages({
+      importMode: 'sync',
+    })
   ],
   resolve: {
     alias: {

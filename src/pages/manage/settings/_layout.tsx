@@ -1,5 +1,5 @@
 import {Separator} from "@/components/ui/separator"
-import {SettingsNav} from "@/pages/manage/settings/_nav"
+import SettingsNav from "@/pages/manage/settings/_nav"
 import {Outlet} from "react-router-dom";
 
 const ManageSettingsLayout = () => {

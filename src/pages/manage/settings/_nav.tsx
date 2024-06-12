@@ -27,7 +27,7 @@ const navItems: navItem[] = [
   },
 ]
 
-export function SettingsNav({className, ...props}: React.HTMLAttributes<HTMLElement>) {
+export default function SettingsNav({className, ...props}: React.HTMLAttributes<HTMLElement>) {
   const location = useLocation();
 
   return (

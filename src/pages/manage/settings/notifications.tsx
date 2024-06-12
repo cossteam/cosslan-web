@@ -1,5 +1,5 @@
-import { Separator } from "@/components/ui/separator"
-import { NotificationsForm } from "@/pages/manage/settings/notifications-form"
+import {Separator} from "@/components/ui/separator"
+import NotificationsForm from "@/pages/manage/settings/notifications-form"
 
 export default function ManageSettingsNotifications() {
   return (
@@ -10,8 +10,8 @@ export default function ManageSettingsNotifications() {
           Configure how you receive notifications.
         </p>
       </div>
-      <Separator />
-      <NotificationsForm />
+      <Separator/>
+      <NotificationsForm/>
     </div>
   )
 }
