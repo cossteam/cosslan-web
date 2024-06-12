@@ -22,6 +22,7 @@ import {Button} from "@/components/ui/button"
 import NavNetwork from "@/pages/manage/_network.tsx";
 import {useState} from "react";
 import {cn} from "@/lib/utils.ts";
+import {userState} from "@/lib/state.ts";
 
 const ManageNav = () => {
   const location = useLocation();
@@ -59,11 +60,11 @@ const ManageNav = () => {
 
   return (
     <nav className="flex flex-col h-full">
-      <div className="flex shrink-0 flex-row justify-center items-center p-2 border-b">
+      <div className="flex shrink-0 flex-row justify-center items-center p-[0.6rem] border-b">
         <Terminal className="h-[2.3rem] w-[2.3rem]"/>
         <div className="flex flex-col h-full pl-2 scale-90 origin-left">
-          <div className="text-lg">COSSLAN</div>
-          <div className="text-xs -mt-1 opacity-50">NETWORK</div>
+          <div className="text-lg leading-5">COSSLAN</div>
+          <div className="text-xs leading-4 opacity-50">NETWORK</div>
         </div>
       </div>
 
@@ -75,7 +76,7 @@ const ManageNav = () => {
             if (item.children) {
               return (
                 <Accordion type="single" collapsible key={key}>
-                  <AccordionItem value={item.href} className="border-b-0">
+                <AccordionItem value={item.href} className="border-b-0">
                     <Button variant={location.pathname === item.href ? 'secondary' : 'ghost'} className="w-full justify-start hover:no-underline" asChild>
                       <AccordionTrigger>
                         <div className="flex-1 text-left">{item.title}</div>
@@ -118,7 +119,7 @@ const ManageNav = () => {
           <PopoverContent sideOffset={12} className="w-auto">
             <div className="p-2 pt-0 pb-3">
               <p className="text-sm text-muted-foreground">
-                aabb@sarzla.com
+                {userState.getState().email}
               </p>
             </div>
             <div className="flex flex-col space-y-1 -mb-2">

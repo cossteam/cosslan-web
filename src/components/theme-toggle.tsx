@@ -9,31 +9,39 @@ import {
 } from "@/components/ui/dropdown-menu"
 import {useTranslation} from "react-i18next"
 import {useEffect, useState} from "react"
-import {getLocalState, setLocalState} from "@/lib/state"
+import {uiState} from "@/lib/state.ts";
 
-const storageKey: string = 'ui-theme';  // storage key
-const defaultTheme: string = getLocalState(storageKey, 'system');  // default theme
-const themeList: string[] = ['light', 'dark', 'system'];  // theme list
+const ThemeList: string[] = ['light', 'dark', 'system'];
+const ThemeConfig = {
+  default: uiState.getState().theme || 'system',
+  current: '',
+  setTheme: (theme: string) => {
+    updateTheme(theme)
+  }
+}
 
-let currentTheme: string = ''
+export {ThemeList, ThemeConfig}
+
 const updateTheme = (theme: string) => {
-  setLocalState(storageKey, theme)
+  uiState.setState({theme: theme})
 
   let themeName = theme
   if (themeName === "system") {
     themeName = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"
   }
-  if (currentTheme === themeName) return
+  if (ThemeConfig.current === themeName) return
 
   const root = window.document.documentElement
   root.classList.remove("light", "dark")
-  root.classList.add(currentTheme = themeName)
+  root.classList.add(ThemeConfig.current = themeName)
 }
-updateTheme(defaultTheme)
+updateTheme(ThemeConfig.default)
 
 export function ThemeToggle({showLabel = false}) {
   const {t} = useTranslation()
-  const [themeName, setTheme] = useState<string>(defaultTheme)
+  const [themeName, setTheme] = useState<string>(ThemeConfig.current)
+
+  ThemeConfig.setTheme = setTheme
 
   useEffect(() => updateTheme(themeName), [themeName])
 
@@ -43,9 +51,9 @@ export function ThemeToggle({showLabel = false}) {
     return `theme.${theme}` as 'theme.light' | 'theme.dark' | 'theme.system'
   }
 
-  const menuItems = themeList.map((theme) => {
+  const menuItems = ThemeList.map((theme) => {
     return (
-      <DropdownMenuCheckboxItem key={theme} checked={isChecked(theme)} onClick={() => setTheme(theme)}>
+      <DropdownMenuCheckboxItem key={theme} checked={isChecked(theme)} onClick={() => ThemeConfig.setTheme(theme)}>
         {t(themeLabel(theme))}
       </DropdownMenuCheckboxItem>
     )

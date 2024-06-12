@@ -13,40 +13,44 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import {RadioGroup, RadioGroupItem} from "@/components/ui/radio-group"
-import {toast} from "@/components/ui/use-toast"
 import {Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select.tsx";
+import {LanguageList} from "@/components/language-toggle.tsx";
+import {ThemeList, ThemeConfig} from "@/components/theme-toggle.tsx";
+import {setLanguage} from "@/i18n/config.ts";
+import {uiState} from "@/lib/state.ts";
+import {useToast} from "@/components/ui/use-toast.ts";
 
 const appearanceFormSchema = z.object({
-  theme: z.enum(["light", "dark"], {
-    required_error: "Please select a theme.",
+  language: z.enum(['', ...LanguageList.map((item) => item.type)], {
+    invalid_type_error: "Select a language",
+    required_error: "Please select a language.",
   }),
-  font: z.enum(["inter", "manrope", "system"], {
-    invalid_type_error: "Select a font",
-    required_error: "Please select a font.",
+  theme: z.enum(['', ...ThemeList.map((item) => item)], {
+    required_error: "Please select a theme.",
   }),
 })
 
 type AppearanceFormValues = z.infer<typeof appearanceFormSchema>
 
-// This can come from your database or API.
-const defaultValues: Partial<AppearanceFormValues> = {
-  theme: "light",
-}
 
 export function AppearanceForm() {
+  const { toast } = useToast()
+
+  const defaultValues: Partial<AppearanceFormValues> = {
+    language: uiState.getState().language,
+    theme: uiState.getState().theme,
+  }
+
   const form = useForm<AppearanceFormValues>({
     resolver: zodResolver(appearanceFormSchema),
     defaultValues,
   })
 
-  function onSubmit(data: AppearanceFormValues) {
+  async function onSubmit(data: AppearanceFormValues) {
+    ThemeConfig.setTheme(data.theme);
+    await setLanguage(data.language);
     toast({
-      title: "You submitted the following values:",
-      description: (
-        <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-          <code className="text-white">{JSON.stringify(data, null, 2)}</code>
-        </pre>
-      ),
+      description: "Update successful.",
     })
   }
 
@@ -55,30 +59,30 @@ export function AppearanceForm() {
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
         <FormField
           control={form.control}
-          name="font"
+          name="language"
           render={({field}) => (
             <FormItem>
-              <FormLabel>Font</FormLabel>
+              <FormLabel>Language</FormLabel>
               <div className="relative w-max">
                 <FormControl>
                   <Select
                     onValueChange={field.onChange}
                     defaultValue={field.value}>
                     <SelectTrigger className="w-[200px] appearance-none font-normal">
-                      <SelectValue placeholder="Select a font"/>
+                      <SelectValue placeholder="Select a language"/>
                     </SelectTrigger>
                     <SelectContent>
                       <SelectGroup>
-                        <SelectItem value="inter">Inter</SelectItem>
-                        <SelectItem value="manrope">Manrope</SelectItem>
-                        <SelectItem value="system">System</SelectItem>
+                        {LanguageList.map((language, key) => (
+                          <SelectItem key={key} value={language.type}>{language.label}</SelectItem>
+                        ))}
                       </SelectGroup>
                     </SelectContent>
                   </Select>
                 </FormControl>
               </div>
               <FormDescription>
-                Set the font you want to use in the dashboard.
+                Set the language you want to use in the dashboard.
               </FormDescription>
               <FormMessage/>
             </FormItem>
@@ -97,13 +101,10 @@ export function AppearanceForm() {
               <RadioGroup
                 onValueChange={field.onChange}
                 defaultValue={field.value}
-                className="grid max-w-md grid-cols-2 gap-8 pt-2"
+                className="grid max-w-xl grid-cols-3 gap-8 pt-2"
               >
                 <FormItem>
                   <FormLabel className="[&:has([data-state=checked])>div]:border-primary">
-                    <FormControl>
-                      <RadioGroupItem value="light" className="sr-only"/>
-                    </FormControl>
                     <div className="items-center rounded-md border-2 border-muted p-1 hover:border-accent">
                       <div className="space-y-2 rounded-sm bg-[#ecedef] p-2">
                         <div className="space-y-2 rounded-md bg-white p-2 shadow-sm">
@@ -120,16 +121,16 @@ export function AppearanceForm() {
                         </div>
                       </div>
                     </div>
-                    <span className="block w-full p-2 text-center font-normal">
-                      Light
-                    </span>
+                    <div className="flex w-full p-2 justify-center items-center">
+                      <FormControl>
+                        <RadioGroupItem value="light" className="sr-only"/>
+                      </FormControl>
+                      <span className="pl-1.5">Light</span>
+                    </div>
                   </FormLabel>
                 </FormItem>
                 <FormItem>
                   <FormLabel className="[&:has([data-state=checked])>div]:border-primary">
-                    <FormControl>
-                      <RadioGroupItem value="dark" className="sr-only"/>
-                    </FormControl>
                     <div className="items-center rounded-md border-2 border-muted bg-popover p-1 hover:bg-accent hover:text-accent-foreground">
                       <div className="space-y-2 rounded-sm bg-slate-950 p-2">
                         <div className="space-y-2 rounded-md bg-slate-800 p-2 shadow-sm">
@@ -146,9 +147,38 @@ export function AppearanceForm() {
                         </div>
                       </div>
                     </div>
-                    <span className="block w-full p-2 text-center font-normal">
-                      Dark
-                    </span>
+                    <div className="flex w-full p-2 justify-center items-center">
+                      <FormControl>
+                        <RadioGroupItem value="dark" className="sr-only"/>
+                      </FormControl>
+                      <span className="pl-1.5">Dark</span>
+                    </div>
+                  </FormLabel>
+                </FormItem>
+                <FormItem>
+                  <FormLabel className="[&:has([data-state=checked])>div]:border-primary">
+                    <div className="items-center rounded-md border-2 border-muted bg-popover p-1 hover:bg-accent hover:text-accent-foreground">
+                      <div className="space-y-2 rounded-sm bg-slate-950 p-2">
+                        <div className="space-y-2 rounded-md bg-slate-800 p-2 shadow-sm">
+                          <div className="h-2 w-[80px] max-w-[80%] rounded-lg bg-slate-400"/>
+                          <div className="h-2 w-[100px] max-w-[100%] rounded-lg bg-slate-400"/>
+                        </div>
+                        <div className="flex items-center space-x-2 rounded-md bg-slate-800 p-2 shadow-sm">
+                          <div className="h-4 w-4 rounded-full bg-slate-400"/>
+                          <div className="h-2 w-[100px] rounded-lg bg-slate-400"/>
+                        </div>
+                        <div className="flex items-center space-x-2 rounded-md bg-slate-800 p-2 shadow-sm">
+                          <div className="h-4 w-4 rounded-full bg-slate-400"/>
+                          <div className="h-2 w-[100px] rounded-lg bg-slate-400"/>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex w-full p-2 justify-center items-center">
+                      <FormControl>
+                        <RadioGroupItem value="system" className="sr-only"/>
+                      </FormControl>
+                      <span className="pl-1.5">System</span>
+                    </div>
                   </FormLabel>
                 </FormItem>
               </RadioGroup>

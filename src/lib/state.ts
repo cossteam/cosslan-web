@@ -1,24 +1,41 @@
-import {useEffect, useState} from "react";
+import {create} from 'zustand';
+import {persist, createJSONStorage} from 'zustand/middleware'
 
-export default function useLocalState<T>(
-  key: string,
-  initialValue: T
-): [T, (value: T) => void] {
-  const [state, setInternalState] = useState<T>(initialValue);
+const userState = create(
+  persist(
+    () => ({
+      email: '',
+      login: {
+        email: '',
+      }
+    }),
+    {
+      name: 'store_user',
+      storage: createJSONStorage(() => localStorage),
+    },
+  ),
+)
 
-  useEffect(() => {
-    const value = localStorage.getItem(key);
-    if (!value) return;
-    setInternalState(JSON.parse(value));
-  }, [key]);
+const uiState = create(
+  persist(
+    () => ({
+      theme: '',
+      language: '',
+    }),
+    {
+      name: 'store_ui',
+      storage: createJSONStorage(() => localStorage),
+    },
+  ),
+)
 
-  const setState = (value: T) => {
-    localStorage.setItem(key, JSON.stringify(value));
-    setInternalState(value);
-  };
+export {userState, uiState};
 
-  return [state, setState];
-}
+
+// ************************************************************* //
+// ************************************************************* //
+// ************************************************************* //
+
 
 export function getLocalState<T>(name: string, initialValue: T): T {
   let ns: string = name

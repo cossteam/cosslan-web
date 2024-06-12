@@ -1,13 +1,12 @@
-import useLocalState from "@/lib/state.ts";
 import {useNavigate} from "react-router-dom";
 import {useEffect} from "react";
+import {userState} from "@/lib/state.ts";
 
 const Index = () => {
   const navigate = useNavigate();
-  const [user] = useLocalState('user', {email: ''});
 
   useEffect(() => {
-    if (user.email) {
+    if (userState.getState().email) {
       navigate("/manage");
     } else {
       navigate("/login");

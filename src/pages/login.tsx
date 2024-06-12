@@ -27,13 +27,12 @@ import {z} from "zod";
 import {Form, FormControl, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form.tsx";
 import {useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
-import useLocalState, {getLocalState, setLocalState} from "@/lib/state.ts";
+import {userState} from "@/lib/state.ts";
 
 const Login = () => {
   const navigate = useNavigate();
   const {t} = useTranslation();
   const [isReg, setIsReg] = useState<boolean>(false);
-  const [, setUser] = useLocalState('user', {email: ''});
 
   const loginFormSchema = z.object({
     email: z
@@ -63,7 +62,7 @@ const Login = () => {
   type LoginFormValues = z.infer<typeof loginFormSchema>
 
   const defaultValues: Partial<LoginFormValues> = {
-    email: getLocalState("login.email", "admin@email.com"),
+    email: userState.getState().email || "admin@email.com",
     password: "",
     confirmPassword: "",
   }
@@ -74,8 +73,12 @@ const Login = () => {
   })
 
   const onSubmit = (data: LoginFormValues) => {
-    setLocalState('login.email', data.email)
-    setUser({email: data.email});
+    userState.setState({
+      email: data.email,
+      login: {
+        email: data.email
+      }
+    });
     navigate("/manage");
   }
 

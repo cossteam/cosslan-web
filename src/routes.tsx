@@ -16,7 +16,6 @@ import ManageMachines from "@/pages/manage/machines";
 import ManageNodes from "@/pages/manage/nodes";
 
 import ManageSettingsLayout from "@/pages/manage/settings/_layout.tsx";
-import ManageSettingsProfile from "@/pages/manage/settings/profile.tsx";
 import ManageSettingsAccount from "@/pages/manage/settings/account.tsx";
 import ManageSettingsAppearance from "@/pages/manage/settings/appearance.tsx";
 import ManageSettingsNotifications from "@/pages/manage/settings/notifications.tsx";
@@ -75,13 +74,6 @@ function Routes() {
           children: [
             {
               path: "",
-              element: <>
-                <PageTitle title={t('page.manage.settings.profile')}/>
-                <ManageSettingsProfile/>
-              </>,
-            },
-            {
-              path: "account",
               element: <>
                 <PageTitle title={t('page.manage.settings.account')}/>
                 <ManageSettingsAccount/>

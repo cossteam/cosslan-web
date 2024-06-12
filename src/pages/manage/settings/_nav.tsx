@@ -6,12 +6,8 @@ import {Link, useLocation} from "react-router-dom";
 
 const navItems = [
   {
-    title: "Profile",
-    href: "/manage/settings",
-  },
-  {
     title: "Account",
-    href: "/manage/settings/account",
+    href: "/manage/settings",
   },
   {
     title: "Appearance",

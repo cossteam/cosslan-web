@@ -1,30 +1,19 @@
 import i18next from 'i18next';
 import {initReactI18next} from 'react-i18next';
-import {getLocalState, setLocalState} from '@/lib/state';
+import {getLocalState, setLocalState} from '@/lib/state.ts';
 
 import translationEN from './en/translation.json';
 import translationCN from './zh-cn/translation.json';
 import translationTW from './zh-tw/translation.json';
+import {uiState} from "@/lib/state.ts";
 
-const storageKey: string = 'ui-language';  // storage key
-const defaultLng: string = getLocalState(storageKey, 'en');   // default language
-
-// language type
-export const languageType: {
-  [key: string]: string
-} = {
-  en: 'English',
-  zhCN: '简体中文',
-  zhTW: '繁体中文',
-};
-
-export function setLanguage(lang: string) {
-  setLocalState(storageKey, lang);
-  return i18next.changeLanguage(lang);
+export function setLanguage(language: string) {
+  uiState.setState({language})
+  return i18next.changeLanguage(language);
 }
 
 i18next.use(initReactI18next).init({
-  lng: defaultLng,
+  lng: uiState.getState().language || 'en',
   debug: true,
   resources: {
     en: {
