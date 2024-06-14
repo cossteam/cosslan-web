@@ -12,7 +12,7 @@ const Title = ({prefix = '', suffix = ''}) => {
     }
     const paths = location.pathname.split('/').filter(Boolean);
     while (paths.length > 0) {
-      const key = 'page.' + paths.join('.')
+      const key = 'pages.' + paths.join('.')
       if (i18next.exists(key)) {
         try {
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment

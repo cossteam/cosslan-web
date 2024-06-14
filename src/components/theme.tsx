@@ -36,7 +36,9 @@ const ThemeTool = {
 export {ThemeList, ThemeTool}
 
 export function ThemeInit() {
-  ThemeTool.setTheme(ThemeTool.default)
+  useEffect(() => {
+    ThemeTool.setTheme(ThemeTool.default)
+  }, []);
   return null
 }
 

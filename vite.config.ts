@@ -15,7 +15,7 @@ export default defineConfig({
     react(),
     pages({
       importMode: 'sync',
-      exclude: ['**/_*.tsx'],
+      exclude: ['**/_*.tsx', '**/*-form.tsx', '**/*-component.tsx'],
     })
   ],
   resolve: {

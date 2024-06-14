@@ -59,27 +59,31 @@ const ManageNav = () => {
 
   const navItems = [
     {
-      title: t("page.manage.overview"),
+      title: t("pages.manage.overview"),
       href: "/manage",
     },
     {
-      title: t("page.manage.machines"),
+      title: t("pages.manage.machines"),
       href: "/manage/machines",
     },
     {
-      title: t("page.manage.nodes"),
+      title: t("pages.manage.nodes"),
       href: "/manage/nodes",
     },
     {
-      title: t("page.manage.support.index"),
+      title: t("pages.manage.users"),
+      href: "/manage/users",
+    },
+    {
+      title: t("support.support"),
       href: "#",
       children: [
         {
-          title: t("page.manage.support.contact"),
+          title: t("support.contact"),
           href: "#",
         },
         {
-          title: t("page.manage.support.downloads"),
+          title: t("support.downloads"),
           href: "#",
         },
       ],
