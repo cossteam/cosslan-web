@@ -18,8 +18,9 @@
   },
   "support": {
     "support": "Support",
-    "contact": "Contact us",
-    "downloads": "Downloads"
+    "issues": "Common issues",
+    "request": "Feature request",
+    "downloads": "Download clients"
   },
   "theme": {
     "dark": "Dark",

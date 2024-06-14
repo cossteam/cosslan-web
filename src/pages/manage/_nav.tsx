@@ -79,11 +79,15 @@ const ManageNav = () => {
       href: "#",
       children: [
         {
-          title: t("support.contact"),
+          title: t("support.downloads"),
           href: "#",
         },
         {
-          title: t("support.downloads"),
+          title: t("support.issues"),
+          href: "#",
+        },
+        {
+          title: t("support.request"),
           href: "#",
         },
       ],

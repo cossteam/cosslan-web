@@ -1,16 +1,14 @@
 import {
   Server,
-  ArrowUpRight,
   MonitorSmartphone,
-  ArrowDownUp,
+  ArrowDownUp, Users,
 } from "lucide-react"
+import {Bar, BarChart, ResponsiveContainer, XAxis, YAxis} from "recharts"
 
 import {
   Avatar,
   AvatarFallback,
 } from "@/components/ui/avatar"
-import {Badge} from "@/components/ui/badge"
-import {Button} from "@/components/ui/button"
 import {
   Card,
   CardContent,
@@ -19,19 +17,106 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
-import {Link} from "react-router-dom";
+import {Machine} from "@/pages/manage/machines.tsx";
+
+const barData = [
+  {"name": "1st", "total": Math.floor(Math.random() * 50000000000) + 10000000000},
+  {"name": "2nd", "total": Math.floor(Math.random() * 50000000000) + 10000000000},
+  {"name": "3rd", "total": Math.floor(Math.random() * 50000000000) + 10000000000},
+  {"name": "4th", "total": Math.floor(Math.random() * 50000000000) + 10000000000},
+  {"name": "5th", "total": Math.floor(Math.random() * 50000000000) + 10000000000},
+  {"name": "6th", "total": Math.floor(Math.random() * 50000000000) + 10000000000},
+  {"name": "7th", "total": Math.floor(Math.random() * 50000000000) + 10000000000},
+  {"name": "8th", "total": Math.floor(Math.random() * 50000000000) + 10000000000},
+  {"name": "9th", "total": Math.floor(Math.random() * 50000000000) + 10000000000},
+  {"name": "10th", "total": Math.floor(Math.random() * 50000000000) + 10000000000},
+  {"name": "11th", "total": Math.floor(Math.random() * 50000000000) + 10000000000},
+  {"name": "12th", "total": Math.floor(Math.random() * 50000000000) + 10000000000},
+  {"name": "13th", "total": Math.floor(Math.random() * 50000000000) + 10000000000},
+  {"name": "14th", "total": Math.floor(Math.random() * 50000000000) + 10000000000},
+  {"name": "15th", "total": Math.floor(Math.random() * 50000000000) + 10000000000}
+]
+
+const machines: Machine[] = [
+  {
+    "id": "INV003",
+    "name": "Sophia Smith",
+    "email": "sophia.smith@email.com",
+    "ip": "150.200.30.80",
+    "version": "2.10.1",
+    "os": "iOS 15.2.3",
+    "last_seen": "Jun 12, 3:45 PM GMT+8"
+  },
+  {
+    "id": "INV004",
+    "name": "Noah Williams",
+    "email": "noah.williams@email.com",
+    "ip": "120.90.70.25",
+    "version": "1.80.6",
+    "os": "Windows 11.0",
+    "last_seen": "Jun 15, 11:10 AM GMT+8"
+  },
+  {
+    "id": "INV005",
+    "name": "Emma Brown",
+    "email": "emma.brown@email.com",
+    "ip": "90.80.150.40",
+    "version": "2.1.5",
+    "os": "Android 12.1",
+    "last_seen": "Jun 14, 6:37 PM GMT+8"
+  },
+  {
+    "id": "INV006",
+    "name": "William Jones",
+    "email": "william.jones@email.com",
+    "ip": "200.180.50.70",
+    "version": "1.90.3",
+    "os": "Windows 10.0",
+    "last_seen": "Jun 13, 10:45 AM GMT+8"
+  },
+  {
+    "id": "INV007",
+    "name": "Isabella Davis",
+    "email": "isabella.davis@email.com",
+    "ip": "80.120.200.10",
+    "version": "2.0.4",
+    "os": "iOS 14.7.2",
+    "last_seen": "Jun 15, 2:18 PM GMT+8"
+  },
+];
 
 const ManageOverview = () => {
+  const abbreviatedName = (name: string) => {
+    return name.split(" ").map((n) => n[0]).join("").substring(0, 2);
+  }
+
+  const trafficConversion = (value: number) => {
+    const units = ['B', 'KB', 'MB', 'GB', 'TB'];
+    let unitIndex = 0;
+
+    while (value >= 1024 && unitIndex < units.length - 1) {
+      value /= 1024;
+      unitIndex++;
+    }
+
+    return `${value.toFixed(2)} ${units[unitIndex]}`;
+  }
+
+
   return (
-    <main className="flex flex-1 flex-col justify-center gap-4 p-4 min-h-full md:gap-8 md:p-8">
+    <div className="space-y-6 p-10 pb-16">
+      <header className="flex space-y-0.5 gap-2">
+        <div className="flex-grow">
+          <div className="flex justify-between items-center">
+            <div className="flex items-center">
+              <h2 className="text-2xl font-bold tracking-tight">Overview</h2>
+            </div>
+          </div>
+          <p className="text-muted-foreground">
+            View traffic statistics and recent machines.
+          </p>
+        </div>
+      </header>
       <div className="grid gap-4 md:grid-cols-2 md:gap-8 lg:grid-cols-4">
         <Card x-chunk="dashboard-01-chunk-0">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -50,20 +135,6 @@ const ManageOverview = () => {
         <Card x-chunk="dashboard-01-chunk-1">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
-              Traffic yesterday
-            </CardTitle>
-            <ArrowDownUp className="h-4 w-4 text-muted-foreground"/>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">45.23133 GB</div>
-            <p className="text-xs text-muted-foreground">
-              +10.1% from last day
-            </p>
-          </CardContent>
-        </Card>
-        <Card x-chunk="dashboard-01-chunk-2">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
               Machines
             </CardTitle>
             <MonitorSmartphone className="h-4 w-4 text-muted-foreground"/>
@@ -77,7 +148,7 @@ const ManageOverview = () => {
             </p>
           </CardContent>
         </Card>
-        <Card x-chunk="dashboard-01-chunk-3">
+        <Card x-chunk="dashboard-01-chunk-2">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
               Nodes
@@ -93,252 +164,79 @@ const ManageOverview = () => {
             </p>
           </CardContent>
         </Card>
-      </div>
-      <div className="grid gap-4 md:gap-8 lg:grid-cols-2 xl:grid-cols-3">
-        <Card className="xl:col-span-2" x-chunk="dashboard-01-chunk-4">
-          <CardHeader className="flex flex-row items-center">
-            <div className="grid gap-2">
-              <CardTitle>Transactions</CardTitle>
-              <CardDescription>
-                Recent transactions from your store.
-              </CardDescription>
-            </div>
-            <Button asChild size="sm" className="ml-auto gap-1">
-              <Link to="#">
-                View All
-                <ArrowUpRight className="h-4 w-4"/>
-              </Link>
-            </Button>
+        <Card x-chunk="dashboard-01-chunk-3">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">
+              Users
+            </CardTitle>
+            <Users className="h-4 w-4 text-muted-foreground"/>
           </CardHeader>
           <CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Customer</TableHead>
-                  <TableHead className="hidden xl:table-column">
-                    Type
-                  </TableHead>
-                  <TableHead className="hidden xl:table-column">
-                    Status
-                  </TableHead>
-                  <TableHead className="hidden xl:table-column">
-                    Date
-                  </TableHead>
-                  <TableHead className="text-right">Amount</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                <TableRow>
-                  <TableCell>
-                    <div className="font-medium">Liam Johnson</div>
-                    <div className="hidden text-sm text-muted-foreground md:inline">
-                      liam@example.com
-                    </div>
-                  </TableCell>
-                  <TableCell className="hidden xl:table-column">
-                    Sale
-                  </TableCell>
-                  <TableCell className="hidden xl:table-column">
-                    <Badge className="text-xs" variant="outline">
-                      Approved
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="hidden md:table-cell lg:hidden xl:table-column">
-                    2023-06-23
-                  </TableCell>
-                  <TableCell className="text-right">$250.00</TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell>
-                    <div className="font-medium">Olivia Smith</div>
-                    <div className="hidden text-sm text-muted-foreground md:inline">
-                      olivia@example.com
-                    </div>
-                  </TableCell>
-                  <TableCell className="hidden xl:table-column">
-                    Refund
-                  </TableCell>
-                  <TableCell className="hidden xl:table-column">
-                    <Badge className="text-xs" variant="outline">
-                      Declined
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="hidden md:table-cell lg:hidden xl:table-column">
-                    2023-06-24
-                  </TableCell>
-                  <TableCell className="text-right">$150.00</TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell>
-                    <div className="font-medium">Noah Williams</div>
-                    <div className="hidden text-sm text-muted-foreground md:inline">
-                      noah@example.com
-                    </div>
-                  </TableCell>
-                  <TableCell className="hidden xl:table-column">
-                    Subscription
-                  </TableCell>
-                  <TableCell className="hidden xl:table-column">
-                    <Badge className="text-xs" variant="outline">
-                      Approved
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="hidden md:table-cell lg:hidden xl:table-column">
-                    2023-06-25
-                  </TableCell>
-                  <TableCell className="text-right">$350.00</TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell>
-                    <div className="font-medium">Emma Brown</div>
-                    <div className="hidden text-sm text-muted-foreground md:inline">
-                      emma@example.com
-                    </div>
-                  </TableCell>
-                  <TableCell className="hidden xl:table-column">
-                    Sale
-                  </TableCell>
-                  <TableCell className="hidden xl:table-column">
-                    <Badge className="text-xs" variant="outline">
-                      Approved
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="hidden md:table-cell lg:hidden xl:table-column">
-                    2023-06-26
-                  </TableCell>
-                  <TableCell className="text-right">$450.00</TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell>
-                    <div className="font-medium">Liam Johnson</div>
-                    <div className="hidden text-sm text-muted-foreground md:inline">
-                      liam@example.com
-                    </div>
-                  </TableCell>
-                  <TableCell className="hidden xl:table-column">
-                    Sale
-                  </TableCell>
-                  <TableCell className="hidden xl:table-column">
-                    <Badge className="text-xs" variant="outline">
-                      Approved
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="hidden md:table-cell lg:hidden xl:table-column">
-                    2023-06-27
-                  </TableCell>
-                  <TableCell className="text-right">$550.00</TableCell>
-                </TableRow>
-              </TableBody>
-            </Table>
-          </CardContent>
-        </Card>
-        <Card x-chunk="dashboard-01-chunk-5">
-          <CardHeader>
-            <CardTitle>Recent Machines</CardTitle>
-          </CardHeader>
-          <CardContent className="grid gap-8">
-            <div className="flex items-center gap-4">
-              <Avatar className="hidden h-9 w-9 sm:flex">
-                <AvatarFallback>OM</AvatarFallback>
-              </Avatar>
-              <div className="grid gap-1">
-                <p className="text-sm font-medium leading-none">
-                  Olivia Martin
-                </p>
-                <p className="text-sm text-muted-foreground">
-                  olivia.martin@email.com
-                </p>
-              </div>
-              <div className="ml-auto font-medium">+$1,999.00</div>
+            <div className="text-2xl font-bold">
+              8<span className="text-sm pl-0.5">/ 10</span>
             </div>
-            <div className="flex items-center gap-4">
-              <Avatar className="hidden h-9 w-9 sm:flex">
-                <AvatarFallback>JL</AvatarFallback>
-              </Avatar>
-              <div className="grid gap-1">
-                <p className="text-sm font-medium leading-none">
-                  Jackson Lee
-                </p>
-                <p className="text-sm text-muted-foreground">
-                  jackson.lee@email.com
-                </p>
-              </div>
-              <div className="ml-auto font-medium">+$39.00</div>
-            </div>
-            <div className="flex items-center gap-4">
-              <Avatar className="hidden h-9 w-9 sm:flex">
-                <AvatarFallback>IN</AvatarFallback>
-              </Avatar>
-              <div className="grid gap-1">
-                <p className="text-sm font-medium leading-none">
-                  Isabella Nguyen
-                </p>
-                <p className="text-sm text-muted-foreground">
-                  isabella.nguyen@email.com
-                </p>
-              </div>
-              <div className="ml-auto font-medium">+$299.00</div>
-            </div>
-            <div className="flex items-center gap-4">
-              <Avatar className="hidden h-9 w-9 sm:flex">
-                <AvatarFallback>WK</AvatarFallback>
-              </Avatar>
-              <div className="grid gap-1">
-                <p className="text-sm font-medium leading-none">
-                  William Kim
-                </p>
-                <p className="text-sm text-muted-foreground">
-                  will@email.com
-                </p>
-              </div>
-              <div className="ml-auto font-medium">+$99.00</div>
-            </div>
-            <div className="flex items-center gap-4">
-              <Avatar className="hidden h-9 w-9 sm:flex">
-                <AvatarFallback>SD</AvatarFallback>
-              </Avatar>
-              <div className="grid gap-1">
-                <p className="text-sm font-medium leading-none">
-                  Sofia Davis
-                </p>
-                <p className="text-sm text-muted-foreground">
-                  sofia.davis@email.com
-                </p>
-              </div>
-              <div className="ml-auto font-medium">+$39.00</div>
-            </div>
-            <div className="flex items-center gap-4">
-              <Avatar className="hidden h-9 w-9 sm:flex">
-                <AvatarFallback>IN</AvatarFallback>
-              </Avatar>
-              <div className="grid gap-1">
-                <p className="text-sm font-medium leading-none">
-                  Isabella Nguyen
-                </p>
-                <p className="text-sm text-muted-foreground">
-                  isabella.nguyen@email.com
-                </p>
-              </div>
-              <div className="ml-auto font-medium">+$299.00</div>
-            </div>
-            <div className="flex items-center gap-4">
-              <Avatar className="hidden h-9 w-9 sm:flex">
-                <AvatarFallback>IN</AvatarFallback>
-              </Avatar>
-              <div className="grid gap-1">
-                <p className="text-sm font-medium leading-none">
-                  Isabella Nguyen
-                </p>
-                <p className="text-sm text-muted-foreground">
-                  isabella.nguyen@email.com
-                </p>
-              </div>
-              <div className="ml-auto font-medium">+$299.00</div>
-            </div>
+            <p className="text-xs text-muted-foreground">
+              Online accounts for 80%
+            </p>
           </CardContent>
         </Card>
       </div>
-    </main>
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
+        <Card className="col-span-4 hidden lg:block">
+          <CardHeader>
+            <CardTitle>Traffic statistics</CardTitle>
+          </CardHeader>
+          <CardContent className="pl-2">
+            <ResponsiveContainer width="100%" height={350}>
+              <BarChart data={barData}>
+                <XAxis
+                  dataKey="name"
+                  stroke="#888888"
+                  fontSize={12}
+                  tickLine={false}
+                  axisLine={false}
+                />
+                <YAxis
+                  stroke="#888888"
+                  fontSize={12}
+                  tickLine={false}
+                  axisLine={false}
+                  tickFormatter={trafficConversion}
+                />
+                <Bar
+                  dataKey="total"
+                  fill="currentColor"
+                  radius={[4, 4, 0, 0]}
+                  className="fill-primary"
+                />
+              </BarChart>
+            </ResponsiveContainer>
+          </CardContent>
+        </Card>
+        <Card className="col-span-4 lg:col-span-3">
+          <CardHeader>
+            <CardTitle>Machines</CardTitle>
+            <CardDescription>
+              Recent connected machines.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="grid gap-8">
+            {machines.map((machine) => (
+              <div key={machine.id} className="flex items-center">
+                <Avatar className="flex h-9 w-9 items-center justify-center space-y-0 border">
+                  <AvatarFallback>{abbreviatedName(machine.name)}</AvatarFallback>
+                </Avatar>
+                <div className="ml-4 space-y-1">
+                  <p className="text-sm font-medium leading-none">{machine.name}</p>
+                  <p className="text-sm text-muted-foreground">{machine.email}</p>
+                </div>
+                <div className="ml-auto text-sm font-medium">{machine.last_seen}</div>
+              </div>
+            ))}
+          </CardContent>
+        </Card>
+      </div>
+    </div>
   );
 }
 
