@@ -23,6 +23,14 @@ import {
 import {DataTable} from "@/components/ui+/data-table.tsx";
 import {cn} from "@/lib/utils.ts";
 import {Link} from "react-router-dom";
+import {Dialog, DialogFooter, DialogHeader, DialogTitle} from "@/components/ui/dialog";
+import {DialogContent} from "@/components/ui/dialog.tsx";
+import {Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select.tsx";
+import {z} from "zod";
+import {useForm} from "react-hook-form";
+import {zodResolver} from "@hookform/resolvers/zod";
+import {toast} from "@/components/ui/use-toast.ts";
+import {Form, FormControl, FormField, FormItem, FormMessage} from "@/components/ui/form.tsx";
 
 let users: User[] = [
   {
@@ -108,13 +116,39 @@ export type User = {
   last_seen: string
 }
 
+const inviteFormSchema = z.object({
+  email: z.string().email(),
+  role: z.string().optional(),
+})
+
+type InviteFormValues = z.infer<typeof inviteFormSchema>
 
 const ManageUsers = () => {
-  const [openInviteUsers, setOpenInviteUsers] = useState(false)
-  const [openUserManagement, setOpenUserManagement] = useState(false)
+  const [inviteUserInfo, setInviteUserInfo] = useState(false)
+  const [userManageInfo, setUserManageInfo] = useState(false)
 
   const [data, setData] = React.useState(React.useMemo(() => users, []));
   const [rowSelection, setRowSelection] = React.useState({})
+
+  const [openInvite, setOpenInvite] = React.useState(false)
+
+  const inviteForm = useForm<InviteFormValues>({
+    resolver: zodResolver(inviteFormSchema),
+    defaultValues: {
+      role: 'member',
+    },
+  })
+
+  function onInviteSubmit(data: InviteFormValues) {
+    toast({
+      title: "You submitted the following values:",
+      description: (
+        <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
+          <code className="text-white">{JSON.stringify(data, null, 2)}</code>
+        </pre>
+      ),
+    })
+  }
 
   const columns: ColumnDef<User>[] = [
     {
@@ -188,10 +222,10 @@ const ManageUsers = () => {
               >
                 Copy ID
               </DropdownMenuItem>
-              <DropdownMenuSeparator />
+              <DropdownMenuSeparator/>
               <DropdownMenuItem>View logs</DropdownMenuItem>
               <DropdownMenuItem>View details</DropdownMenuItem>
-              <DropdownMenuSeparator />
+              <DropdownMenuSeparator/>
               <DropdownMenuItem
                 className="text-red-600"
                 onClick={() => {
@@ -230,17 +264,82 @@ const ManageUsers = () => {
         </div>
       </header>
 
+      <Dialog open={openInvite} onOpenChange={setOpenInvite}>
+        <DialogContent className="sm:max-w-md max-h-full sm:max-h-[90%] flex flex-col" onOpenAutoFocus={(event) => {
+          event.preventDefault()
+        }}>
+          <DialogHeader>
+            <DialogTitle>Invite external user</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-6 p-2 -m-2 overflow-auto no-scrollbar">
+            <div>
+              Invite users to join this network and access its machines, as allowed by ACLs. If you only want to give a user access to one node, share the node instead.
+            </div>
+            <Form {...inviteForm}>
+              <form onSubmit={inviteForm.handleSubmit(onInviteSubmit)} className="flex space-x-4">
+                <FormField
+                  control={inviteForm.control}
+                  name="email"
+                  render={({field}) => (
+                    <FormItem className="flex-auto">
+                      <FormControl>
+                        <Input placeholder="user@example.com" {...field} />
+                      </FormControl>
+                      <FormMessage/>
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={inviteForm.control}
+                  name="role"
+                  render={({field}) => (
+                    <FormItem className="flex-none w-auto">
+                      <FormControl>
+                        <Select
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}>
+                          <SelectTrigger className="w-full appearance-none font-normal">
+                            <SelectValue/>
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectGroup>
+                              <SelectItem value="owner">Owner</SelectItem>
+                              <SelectItem value="admin">Admin</SelectItem>
+                              <SelectItem value="member">Member</SelectItem>
+                            </SelectGroup>
+                          </SelectContent>
+                        </Select>
+                      </FormControl>
+                      <FormMessage/>
+                    </FormItem>
+                  )}
+                />
+              </form>
+            </Form>
+            <DialogFooter className="sm:justify-start">
+              <Button
+                type="submit"
+                className="px-5"
+                onClick={() => {
+                  inviteForm.handleSubmit(onInviteSubmit)()
+                }}
+              >Invite</Button>
+            </DialogFooter>
+          </div>
+        </DialogContent>
+      </Dialog>
+
       <div className="border rounded-lg mt-8 mb-7 divide-y lg:divide-y-0 lg:divide-x lg:flex">
         <div className="flex-1">
-          <Button onClick={() => setOpenInviteUsers(!openInviteUsers)} variant="ghost" className={cn(
+          <Button onClick={() => setInviteUserInfo(!inviteUserInfo)} variant="ghost" className={cn(
             "h-auto w-full flex items-center justify-start gap-2 py-5 px-5 hover:bg-transparent hover:cursor-pointer md:hidden md:pointer-events-none",
-            openInviteUsers
+            inviteUserInfo
               ? "pb-0"
               : ""
           )}>
             <ChevronRight className={cn(
               "text-text-disabled dark:text-gray-400 mt-px w-5 transition-transform",
-              openInviteUsers
+              inviteUserInfo
                 ? "rotate-90"
                 : ""
             )}/>
@@ -248,7 +347,7 @@ const ManageUsers = () => {
           </Button>
           <div className={cn(
             "md:!block",
-            openInviteUsers
+            inviteUserInfo
               ? ""
               : "hidden"
           )}
@@ -262,7 +361,7 @@ const ManageUsers = () => {
                   <div>
                     <h3 className="font-medium">Invite users</h3>
                     <p className="text-sm mt-0.5 text-text-muted dark:text-gray-400">You can invite users by generating an invite link to share with them.</p>
-                    <Button className="h-9 px-3 text-sm py-[0.35rem] mt-3">Invite external users</Button>
+                    <Button className="h-9 px-3 text-sm py-[0.35rem] mt-3" onClick={() => setOpenInvite(true)}>Invite external users</Button>
                   </div>
                 </div>
               </div>
@@ -270,15 +369,15 @@ const ManageUsers = () => {
           </div>
         </div>
         <div className="flex-1 lg:max-w-[50%]">
-          <Button onClick={() => setOpenUserManagement(!openUserManagement)} variant="ghost" className={cn(
+          <Button onClick={() => setUserManageInfo(!userManageInfo)} variant="ghost" className={cn(
             "h-auto w-full flex items-center justify-start gap-2 py-5 px-5 hover:bg-transparent hover:cursor-pointer md:hidden md:pointer-events-none",
-            openUserManagement
+            userManageInfo
               ? "pb-0"
               : ""
           )}>
             <ChevronRight className={cn(
               "text-text-disabled dark:text-gray-400 mt-px w-5 transition-transform",
-              openUserManagement
+              userManageInfo
                 ? "rotate-90"
                 : ""
             )}/>
@@ -286,7 +385,7 @@ const ManageUsers = () => {
           </Button>
           <div className={cn(
             "md:!block",
-            openUserManagement
+            userManageInfo
               ? ""
               : "hidden"
           )}
@@ -299,11 +398,11 @@ const ManageUsers = () => {
                   </div>
                   <div>
                     <h3 className="font-medium">Approval is not required</h3>
-                    <p className="text-sm mt-0.5 text-text-muted dark:text-gray-400">Invited users can join without manual approval from admins.</p>
+                    <p className="text-sm mt-0.5 text-text-muted dark:text-gray-400">Invited to join the network without human approval to join.</p>
                   </div>
                 </div>
               </div>
-              <Link to="#" className="link">Edit in Settings →</Link>
+              <Link to="/manage/settings">Edit in Settings →</Link>
             </div>
           </div>
         </div>

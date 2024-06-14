@@ -15,6 +15,7 @@ import {
 import {Input} from "@/components/ui/input"
 import {toast} from "@/components/ui/use-toast"
 import {userState} from "@/lib/state.ts";
+import {Switch} from "@/components/ui/switch.tsx";
 
 
 const accountFormSchema = z.object({
@@ -31,20 +32,20 @@ const accountFormSchema = z.object({
       required_error: "Please enter your email.",
     })
     .email(),
+  invite_approval: z.boolean(),
 })
 
 type AccountFormValues = z.infer<typeof accountFormSchema>
 
 export default function AccountForm() {
 
-  const defaultValues: Partial<AccountFormValues> = {
-    name: "",
-    email: userState.getState().email,
-  }
-
   const form = useForm<AccountFormValues>({
     resolver: zodResolver(accountFormSchema),
-    defaultValues,
+    defaultValues: {
+      name: "",
+      email: userState.getState().email,
+      invite_approval: false,
+    },
   })
 
   function onSubmit(data: AccountFormValues) {
@@ -90,6 +91,29 @@ export default function AccountForm() {
                 Your email is your unique identity and cannot be modified.
               </FormDescription>
               <FormMessage/>
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="invite_approval"
+          render={({ field }) => (
+            <FormItem className="flex flex-row items-center justify-between">
+              <div className="space-y-0.5">
+                <FormLabel className="text-base">
+                  User Approval
+                </FormLabel>
+                <FormDescription>
+                  Invited to join the network without human approval to join.
+                </FormDescription>
+              </div>
+              <FormControl>
+                <Switch
+                  checked={field.value}
+                  onCheckedChange={field.onChange}
+                  aria-readonly
+                />
+              </FormControl>
             </FormItem>
           )}
         />

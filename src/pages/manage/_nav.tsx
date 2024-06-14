@@ -28,6 +28,7 @@ import {Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandL
 import {Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger} from "@/components/ui/dialog.tsx";
 import {Label} from "@/components/ui/label.tsx";
 import {Input} from "@/components/ui/input.tsx";
+import {RadioGroup, RadioGroupItem} from "@/components/ui/radio-group.tsx";
 
 const networkGroups = [
   {
@@ -45,6 +46,33 @@ const networkGroups = [
   },
 ]
 
+const ipv4s = [
+  "10.147.17.*",
+  "10.147.18.*",
+  "10.147.19.*",
+  "10.147.20.*",
+  "10.144.*.*",
+  "10.241.*.*",
+  "10.242.*.*",
+  "10.243.*.*",
+  "10.244.*.*",
+  "172.22.*.*",
+  "172.23.*.*",
+  "172.24.*.*",
+  "172.25.*.*",
+  "172.26.*.*",
+  "172.27.*.*",
+  "172.28.*.*",
+  "172.29.*.*",
+  "172.30.*.*",
+  "192.168.191.*",
+  "192.168.192.*",
+  "192.168.193.*",
+  "192.168.194.*",
+  "192.168.195.*",
+  "192.168.196.*"
+]
+
 const ManageNav = () => {
   const {t} = useTranslation();
   const location = useLocation();
@@ -54,6 +82,8 @@ const ManageNav = () => {
   const [networkSelected, setNetworkSelected] = React.useState(
     networkGroups[0].networks[0]
   )
+
+  const [defaultIpv4, setDefaultIpv4] = React.useState(ipv4s[Math.floor(Math.random() * ipv4s.length)])
 
   const [openUserAvatar, setOpenUserAvatar] = useState(false)
 
@@ -180,9 +210,22 @@ const ManageNav = () => {
           </DialogHeader>
           <div>
             <div className="space-y-4 py-2 pb-4">
-              <div className="space-y-2">
+              <div className="space-y-3">
                 <Label htmlFor="name">Network name</Label>
                 <Input id="name" placeholder="Home Work"/>
+              </div>
+              <div className="space-y-4">
+                <Label htmlFor="name">IPv4 range</Label>
+                <RadioGroup defaultValue={defaultIpv4} onValueChange={setDefaultIpv4}>
+                  <div className="grid grid-cols-3 gap-x-4">
+                    {ipv4s.map((ipv4, key) => (
+                      <Label key={key} htmlFor={ipv4} className="flex items-center space-x-2 py-2.5">
+                        <RadioGroupItem value={ipv4} id={ipv4}/>
+                        <span>{ipv4}</span>
+                      </Label>
+                    ))}
+                  </div>
+                </RadioGroup>
               </div>
             </div>
           </div>

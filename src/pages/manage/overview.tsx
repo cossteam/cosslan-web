@@ -99,7 +99,7 @@ const ManageOverview = () => {
       unitIndex++;
     }
 
-    return `${value.toFixed(2)} ${units[unitIndex]}`;
+    return `${value.toFixed(2)}${units[unitIndex]}`;
   }
 
 

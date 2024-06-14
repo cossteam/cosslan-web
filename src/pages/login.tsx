@@ -127,7 +127,7 @@ const Login = () => {
                         {t('user.password')}
                       </div>
                       <AlertDialog>
-                        <AlertDialogTrigger className="ml-auto inline-block text-sm underline">
+                        <AlertDialogTrigger className="ml-auto inline-block text-sm underline" tabIndex={-1}>
                           {t('user.forgotPassword')}
                         </AlertDialogTrigger>
                         <AlertDialogContent>
