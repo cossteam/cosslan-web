@@ -1,6 +1,6 @@
 import {Link, useLocation} from "react-router-dom";
 import {useTranslation} from "react-i18next";
-import {Terminal} from "lucide-react"
+import {Orbit as Logo} from "lucide-react"
 
 import {
   Accordion,
@@ -127,8 +127,8 @@ const ManageNav = () => {
   return (
     <nav className="flex flex-col h-full">
       <div className="flex shrink-0 flex-row justify-center items-center p-[0.6rem] border-b">
-        <Terminal className="h-[2.3rem] w-[2.3rem]"/>
-        <div className="flex flex-col h-full pl-2 scale-90 origin-left">
+        <Logo className="h-[2.2rem] w-[2.2rem]"/>
+        <div className="flex flex-col h-full pl-3 scale-90 origin-left">
           <div className="text-lg leading-5">COSSLAN</div>
           <div className="text-xs leading-4 opacity-50">NETWORK</div>
         </div>
