@@ -35,7 +35,9 @@
     "cancel": "Cancel",
     "confirm": "Confirm",
     "continue": "Continue",
-    "ok": "OK"
+    "ok": "OK",
+
+    "dev": "This feature is still under development."
   },
   "user": {
     "login": "Login",
@@ -50,7 +52,6 @@
     "registerDescription": "Register to create an account.",
     "confirmPassword": "Confirm Password",
     "alreadyHaveAccount": "Already have an account?",
-    "forgotPasswordDescription": "Please contact customer service.",
 
     "signIn": "Sign In",
     "signUp": "Sign Up",

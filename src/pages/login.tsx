@@ -16,7 +16,6 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import {Input} from "@/components/ui/input"
 import {Theme} from "@/components/theme.tsx";
@@ -33,6 +32,7 @@ import {Loader2} from "lucide-react";
 const Login = () => {
   const navigate = useNavigate();
   const {t} = useTranslation();
+  const [devTip, setDevTip] = useState<boolean>(false);
   const [isReg, setIsReg] = useState<boolean>(false);
   const [isLoad, setIsLoad] = useState<boolean>(false);
 
@@ -63,15 +63,13 @@ const Login = () => {
 
   type LoginFormValues = z.infer<typeof loginFormSchema>
 
-  const defaultValues: Partial<LoginFormValues> = {
-    email: userState.getState().email || "",
-    password: "",
-    confirmPassword: "",
-  }
-
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginFormSchema),
-    defaultValues,
+    defaultValues: {
+      email: userState.getState().email || "test@cosslan.com",
+      password: "123456",
+      confirmPassword: "",
+    },
   })
 
   const onSubmit = (data: LoginFormValues) => {
@@ -92,6 +90,19 @@ const Login = () => {
         <Theme/>
         <Language/>
       </div>
+      <AlertDialog open={devTip} onOpenChange={setDevTip}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t('alert.warning')}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {t('alert.dev')}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogAction>{t('alert.ok')}</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
       <Card className="w-full max-w-sm max-sm:border-0">
         <CardHeader>
           <CardTitle className="text-2xl">{t(isReg ? 'user.register' : 'user.login')}</CardTitle>
@@ -126,22 +137,9 @@ const Login = () => {
                       <div className="truncate">
                         {t('user.password')}
                       </div>
-                      <AlertDialog>
-                        <AlertDialogTrigger className="ml-auto inline-block text-sm underline" tabIndex={-1}>
-                          {t('user.forgotPassword')}
-                        </AlertDialogTrigger>
-                        <AlertDialogContent>
-                          <AlertDialogHeader>
-                            <AlertDialogTitle>{t('alert.warning')}</AlertDialogTitle>
-                            <AlertDialogDescription>
-                              {t('user.forgotPasswordDescription')}
-                            </AlertDialogDescription>
-                          </AlertDialogHeader>
-                          <AlertDialogFooter>
-                            <AlertDialogAction>{t('alert.ok')}</AlertDialogAction>
-                          </AlertDialogFooter>
-                        </AlertDialogContent>
-                      </AlertDialog>
+                      <div className="ml-auto inline-block text-sm underline" onClick={() => setDevTip(true)}>
+                        {t('user.forgotPassword')}
+                      </div>
                     </FormLabel>
                     <FormControl>
                       <Input type="password" {...field} />
@@ -175,7 +173,7 @@ const Login = () => {
               </Button>
             </form>
           </Form>
-          <Button type="button" variant="outline" className="w-full mt-4">
+          <Button type="button" variant="outline" className="w-full mt-4" onClick={() => setDevTip(true)}>
             {t('user.loginWithGithub')}
           </Button>
           <div className="mt-4 text-center text-sm">

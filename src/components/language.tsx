@@ -11,7 +11,6 @@ import {
 import {useTranslation} from 'react-i18next';
 import {setLanguage as updateLanguage} from "@/i18n/config";
 import {uiState} from "@/lib/state.ts";
-import {useEffect} from "react";
 
 const LanguageList = [
   {type: 'en', label: 'English'},
@@ -27,17 +26,18 @@ const LanguageTool = {
     uiState.setState({language})
     //
     updateLanguage(language).then(() => {
+      const root = window.document.documentElement
+      root.setAttribute("lang", language)
     })
+    //
+    return language
   }
 }
 
 export {LanguageList, LanguageTool};
 
 export function LanguageInit() {
-  useEffect(() => {
-    LanguageTool.setLanguage(LanguageTool.default);
-  }, [])
-  return null
+  LanguageTool.setLanguage(LanguageTool.default);
 }
 
 export function Language({showLabel = false}) {

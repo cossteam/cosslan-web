@@ -30,16 +30,15 @@ const ThemeTool = {
     const root = window.document.documentElement
     root.classList.remove("light", "dark")
     root.classList.add(theme)
+    //
+    return theme
   }
 }
 
 export {ThemeList, ThemeTool}
 
 export function ThemeInit() {
-  useEffect(() => {
-    ThemeTool.setTheme(ThemeTool.default)
-  }, []);
-  return null
+  ThemeTool.setTheme(ThemeTool.default)
 }
 
 export function Theme({showLabel = false}) {

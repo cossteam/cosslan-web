@@ -222,15 +222,15 @@ const ManageOverview = () => {
           </CardHeader>
           <CardContent className="grid gap-8">
             {machines.map((machine) => (
-              <div key={machine.id} className="flex items-center">
-                <Avatar className="flex h-9 w-9 items-center justify-center space-y-0 border">
+              <div key={machine.id} className="flex items-center space-x-4">
+                <Avatar className="flex h-9 w-9 items-center justify-center">
                   <AvatarFallback>{abbreviatedName(machine.name)}</AvatarFallback>
                 </Avatar>
-                <div className="ml-4 space-y-1">
+                <div className="space-y-1">
                   <p className="text-sm font-medium leading-none">{machine.name}</p>
                   <p className="text-sm text-muted-foreground">{machine.email}</p>
                 </div>
-                <div className="ml-auto text-sm font-medium">{machine.last_seen}</div>
+                <div className="text-right text-sm font-medium">{machine.last_seen}</div>
               </div>
             ))}
           </CardContent>

@@ -7,7 +7,10 @@ import {ThemeInit} from "@/components/theme.tsx";
 import {LanguageInit} from "@/components/language.tsx";
 import {useLocation, useNavigate} from "react-router-dom";
 import {userState} from "@/lib/state.ts";
-import Router from './router'
+import Router from './router';
+
+ThemeInit()
+LanguageInit()
 
 const App = () => {
   const location = useLocation()
@@ -30,8 +33,6 @@ const App = () => {
   return (
     <>
       <Title/>
-      <ThemeInit/>
-      <LanguageInit/>
       <Suspense fallback={<Loading/>}>
         <Router/>
       </Suspense>
