@@ -462,7 +462,7 @@ const ManageNodes = () => {
               />
             </form>
           </Form>
-          <DialogFooter>
+          <DialogFooter className="max-sm:space-y-2 max-sm:space-y-reverse">
             <Button
               variant="outline"
               onClick={() => setAddOpen(false)}
@@ -493,7 +493,7 @@ const ManageNodes = () => {
           </div>
         </div>
       ) : (
-        <div className="space-y-6 p-10 pb-16">
+        <div className="space-y-6 p-6 md:p-10">
           <header className="flex space-y-0.5 gap-2">
             <div className="flex-grow">
               <div className="flex justify-between items-center">

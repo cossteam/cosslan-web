@@ -104,7 +104,7 @@ const ManageOverview = () => {
 
 
   return (
-    <div className="space-y-6 p-10 pb-16">
+    <div className="space-y-6 p-6 md:p-10">
       <header className="flex space-y-0.5 gap-2">
         <div className="flex-grow">
           <div className="flex justify-between items-center">
