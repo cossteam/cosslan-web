@@ -43,6 +43,7 @@ type AccountFormValues = z.infer<typeof accountFormSchema>
 
 export default function AccountForm() {
   const [isLoad, setIsLoad] = useState(false)
+
   const form = useForm<AccountFormValues>({
     resolver: zodResolver(accountFormSchema),
     defaultValues: {
@@ -66,7 +67,9 @@ export default function AccountForm() {
     await userSave({
       nickname: data.nickname
     }).then(({data}) => {
-      userState.setState(data)
+      userState.setState(Object.assign(userState.getState(), {
+        nickname: data.nickname
+      }))
     })
     setIsLoad(false)
     toast({
@@ -76,6 +79,16 @@ export default function AccountForm() {
   }
 
   useEffect(() => {
+    userState.subscribe(
+      state => [state.nickname, state.email],
+      ([nickname, email]) => {
+        form.setValue("nickname", nickname || "")
+        form.setValue("email", email || "")
+      },
+      {
+        fireImmediately: true,
+      }
+    )
     userSettingInfo({
       name: "approval"
     }).then(({data}) => {

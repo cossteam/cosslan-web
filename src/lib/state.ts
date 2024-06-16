@@ -4,7 +4,7 @@ import {User} from "@/api/types/user.ts";
 
 const userState = create(
   subscribeWithSelector(persist(
-    ():User.Info => ({
+    (): User.Info => ({
       user_id: 0,
     }),
     {
