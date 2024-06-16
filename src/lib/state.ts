@@ -1,11 +1,11 @@
 import {create} from 'zustand';
 import {persist, createJSONStorage, subscribeWithSelector} from 'zustand/middleware'
+import {User} from "@/api/types/user.ts";
 
 const userState = create(
   subscribeWithSelector(persist(
-    () => ({
+    ():User.Info => ({
       user_id: 0,
-      email: '',
     }),
     {
       name: 'store_user',

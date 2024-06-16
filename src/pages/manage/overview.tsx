@@ -223,14 +223,14 @@ const ManageOverview = () => {
           <CardContent className="grid gap-8">
             {machines.map((machine) => (
               <div key={machine.id} className="flex items-center space-x-4">
-                <Avatar className="flex h-9 w-9 items-center justify-center">
+                <Avatar className="flex-shrink-0 flex h-9 w-9 items-center justify-center">
                   <AvatarFallback>{abbreviatedName(machine.name)}</AvatarFallback>
                 </Avatar>
-                <div className="space-y-1">
+                <div className="flex-shrink-0 space-y-1">
                   <p className="text-sm font-medium leading-none">{machine.name}</p>
                   <p className="text-sm text-muted-foreground">{machine.email}</p>
                 </div>
-                <div className="text-right text-sm font-medium">{machine.last_seen}</div>
+                <div className="flex-1 text-right text-sm font-medium">{machine.last_seen}</div>
               </div>
             ))}
           </CardContent>

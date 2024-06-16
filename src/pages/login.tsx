@@ -28,6 +28,7 @@ import {useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {userState} from "@/lib/state.ts";
 import {Loader2} from "lucide-react";
+import {userLogin, userReg} from "@/api/modules/user.ts";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -73,15 +74,18 @@ const Login = () => {
   })
 
   const onSubmit = (data: LoginFormValues) => {
-    userState.setState({
-      user_id: 1,
-      email: data.email,
-    });
     setIsLoad(true);
-    setTimeout(() => {
-      setIsLoad(true);
-      navigate("/manage");
-    }, 600)
+    (isReg ? userReg : userLogin)(data)
+      .then((info) => {
+        userState.setState(info.data)
+        navigate("/manage");
+      })
+      .catch((err) => {
+        console.log(err);
+      })
+      .finally(() => {
+        setIsLoad(false);
+      })
   }
 
   return (

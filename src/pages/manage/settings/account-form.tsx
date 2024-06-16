@@ -13,19 +13,23 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import {Input} from "@/components/ui/input"
-import {toast} from "@/components/ui/use-toast"
 import {userState} from "@/lib/state.ts";
 import {Switch} from "@/components/ui/switch.tsx";
+import {userSettingInfo, userSettingSave} from "@/api/modules/user-setting.ts";
+import {useEffect, useState} from "react";
+import {userSave} from "@/api/modules/user.ts";
+import {Loader2} from "lucide-react";
+import {toast} from "@/components/ui/use-toast.ts";
 
 
 const accountFormSchema = z.object({
-  name: z
+  nickname: z
     .string()
     .min(2, {
-      message: "Name must be at least 2 characters.",
+      message: "Nickname must be at least 2 characters.",
     })
     .max(30, {
-      message: "Name must not be longer than 30 characters.",
+      message: "Nickname must not be longer than 30 characters.",
     }),
   email: z
     .string({
@@ -38,41 +42,61 @@ const accountFormSchema = z.object({
 type AccountFormValues = z.infer<typeof accountFormSchema>
 
 export default function AccountForm() {
-
+  const [isLoad, setIsLoad] = useState(false)
   const form = useForm<AccountFormValues>({
     resolver: zodResolver(accountFormSchema),
     defaultValues: {
-      name: "",
+      nickname: userState.getState().nickname,
       email: userState.getState().email,
       invite_approval: false,
     },
   })
 
-  function onSubmit(data: AccountFormValues) {
+  async function onSubmit(data: AccountFormValues) {
+    if (isLoad) {
+      return
+    }
+    setIsLoad(true)
+    await userSettingSave({
+      name: "approval",
+      content: {
+        invite_approval: data.invite_approval ? 1 : 0
+      }
+    })
+    await userSave({
+      nickname: data.nickname
+    }).then(({data}) => {
+      userState.setState(data)
+    })
+    setIsLoad(false)
     toast({
-      title: "You submitted the following values:",
-      description: (
-        <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-          <code className="text-white">{JSON.stringify(data, null, 2)}</code>
-        </pre>
-      ),
+      title: "Account updated.",
+      description: "success",
     })
   }
+
+  useEffect(() => {
+    userSettingInfo({
+      name: "approval"
+    }).then(({data}) => {
+      form.setValue("invite_approval", !!data.content.invite_approval)
+    })
+  }, [form]);
 
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
         <FormField
           control={form.control}
-          name="name"
+          name="nickname"
           render={({field}) => (
             <FormItem>
-              <FormLabel>Name</FormLabel>
+              <FormLabel>Nickname</FormLabel>
               <FormControl>
-                <Input placeholder="Your name" {...field} />
+                <Input placeholder="Your nickname" {...field} />
               </FormControl>
               <FormDescription>
-                This is the name that will be displayed on your profile.
+                This is the nickname that will be displayed on your profile.
               </FormDescription>
               <FormMessage/>
             </FormItem>
@@ -97,7 +121,7 @@ export default function AccountForm() {
         <FormField
           control={form.control}
           name="invite_approval"
-          render={({ field }) => (
+          render={({field}) => (
             <FormItem className="flex flex-row items-center justify-between">
               <div className="space-y-0.5">
                 <FormLabel className="text-base">
@@ -117,7 +141,12 @@ export default function AccountForm() {
             </FormItem>
           )}
         />
-        <Button type="submit">Update account</Button>
+        <Button disabled={isLoad} type="submit">
+          {isLoad && (
+            <Loader2 className="mr-2 h-4 w-4 animate-spin"/>
+          )}
+          Update account
+        </Button>
       </form>
     </Form>
   )
