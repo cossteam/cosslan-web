@@ -3,12 +3,15 @@ export namespace NetworkUser {
     id?: number
     net_id?: number
     user_id?: number
-    user_nickname?: string
-    user_email?: string
     state?: string
     role?: string
     created_at?: string
     updated_at?: string
+  }
+
+  export type InfoJoinUser = Info & {
+    user_nickname?: string
+    user_email?: string
   }
 
   export type ListRequest = {

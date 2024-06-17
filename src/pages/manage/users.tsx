@@ -34,7 +34,7 @@ import {Form, FormControl, FormField, FormItem, FormMessage} from "@/components/
 import {networkUserList} from "@/api/modules/network-user.ts";
 import {NetworkUser} from "@/api/types/network-user.ts";
 
-let users: NetworkUser.Info[] = [];
+let users: NetworkUser.InfoJoinUser[] = [];
 
 const inviteFormSchema = z.object({
   email: z.string().email(),
@@ -47,7 +47,7 @@ const ManageUsers = () => {
   const [inviteUserInfo, setInviteUserInfo] = useState(false)
   const [userManageInfo, setUserManageInfo] = useState(false)
 
-  const [data, setData] = useState<NetworkUser.Info[]>(useMemo(() => users, []));
+  const [data, setData] = useState<NetworkUser.InfoJoinUser[]>(useMemo(() => users, []));
   const [rowSelection, setRowSelection] = useState({})
 
   const [openInvite, setOpenInvite] = useState(false)
@@ -78,7 +78,7 @@ const ManageUsers = () => {
     })
   }, []);
 
-  const columns: ColumnDef<NetworkUser.Info>[] = [
+  const columns: ColumnDef<NetworkUser.InfoJoinUser>[] = [
     {
       id: "select",
       header: ({table}) => (

@@ -170,7 +170,7 @@ const ManageNav = ({
                 className="justify-between shrink-0 w-full border-0 rounded-none border-b pr-3"
               >
                 <div className="mr-2 max-w-full truncate opacity-80">
-                  Network: {networkSelected.ipv4}
+                  Network: {networkSelected.name || networkSelected.ipv4}
                 </div>
                 <CaretSortIcon className="ml-auto h-4 w-4 shrink-0 opacity-50"/>
               </Button>
@@ -191,7 +191,7 @@ const ManageNav = ({
                         className="text-sm"
                       >
                         <div className="truncate">
-                          {network.ipv4}
+                          {network.name || network.ipv4}
                         </div>
                         <CheckIcon
                           className={cn(
