@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import {useEffect, useMemo, useState} from "react";
 import {Button} from "@/components/ui/button.tsx";
 import {ChevronDown, ChevronRight, Columns2, ContactRound, MoreHorizontal, Search, Stamp} from "lucide-react";
 import {Input} from "@/components/ui/input.tsx";
@@ -31,90 +31,10 @@ import {useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {toast} from "@/components/ui/use-toast.ts";
 import {Form, FormControl, FormField, FormItem, FormMessage} from "@/components/ui/form.tsx";
+import {networkUserList} from "@/api/modules/network-user.ts";
+import {NetworkUser} from "@/api/types/network-user.ts";
 
-let users: User[] = [
-  {
-    "id": "INV002",
-    "name": "Liam Johnson",
-    "email": "liam.johnson@email.com",
-    "role": "Owner",
-    "joined": "Mar 21, 2023",
-    "last_seen": "Jun 14, 9:23 AM GMT+8"
-  },
-  {
-    "id": "INV003",
-    "name": "Sophia Smith",
-    "email": "sophia.smith@email.com",
-    "role": "Admin",
-    "joined": "Apr 5, 2023",
-    "last_seen": "Jun 12, 3:45 PM GMT+8"
-  },
-  {
-    "id": "INV004",
-    "name": "Noah Williams",
-    "email": "noah.williams@email.com",
-    "role": "Admin",
-    "joined": "Mar 9, 2023",
-    "last_seen": "Jun 15, 11:10 AM GMT+8"
-  },
-  {
-    "id": "INV005",
-    "name": "Emma Brown",
-    "email": "emma.brown@email.com",
-    "role": "Member",
-    "joined": "Feb 28, 2023",
-    "last_seen": "Jun 14, 6:37 PM GMT+8"
-  },
-  {
-    "id": "INV006",
-    "name": "William Jones",
-    "email": "william.jones@email.com",
-    "role": "Member",
-    "joined": "Mar 4, 2023",
-    "last_seen": "Jun 13, 10:45 AM GMT+8"
-  },
-  {
-    "id": "INV007",
-    "name": "Isabella Davis",
-    "email": "isabella.davis@email.com",
-    "role": "Member",
-    "joined": "Apr 15, 2023",
-    "last_seen": "Jun 15, 2:18 PM GMT+8"
-  },
-  {
-    "id": "INV008",
-    "name": "James Wilson",
-    "email": "james.wilson@email.com",
-    "role": "Member",
-    "joined": "Mar 27, 2023",
-    "last_seen": "Jun 14, 4:59 PM GMT+8"
-  },
-  {
-    "id": "INV009",
-    "name": "Ava Taylor",
-    "email": "ava.taylor@email.com",
-    "role": "Member",
-    "joined": "Feb 19, 2023",
-    "last_seen": "Jun 13, 8:26 AM GMT+8"
-  },
-  {
-    "id": "INV010",
-    "name": "Alexander Martinez",
-    "email": "alexander.martinez@email.com",
-    "role": "Member",
-    "joined": "Mar 7, 2023",
-    "last_seen": "Jun 15, 1:30 PM GMT+8"
-  }
-];
-
-export type User = {
-  id: string
-  name: string
-  email: string
-  role: string
-  joined: string
-  last_seen: string
-}
+let users: NetworkUser.Info[] = [];
 
 const inviteFormSchema = z.object({
   email: z.string().email(),
@@ -127,10 +47,10 @@ const ManageUsers = () => {
   const [inviteUserInfo, setInviteUserInfo] = useState(false)
   const [userManageInfo, setUserManageInfo] = useState(false)
 
-  const [data, setData] = React.useState(React.useMemo(() => users, []));
-  const [rowSelection, setRowSelection] = React.useState({})
+  const [data, setData] = useState<NetworkUser.Info[]>(useMemo(() => users, []));
+  const [rowSelection, setRowSelection] = useState({})
 
-  const [openInvite, setOpenInvite] = React.useState(false)
+  const [openInvite, setOpenInvite] = useState(false)
 
   const inviteForm = useForm<InviteFormValues>({
     resolver: zodResolver(inviteFormSchema),
@@ -150,7 +70,15 @@ const ManageUsers = () => {
     })
   }
 
-  const columns: ColumnDef<User>[] = [
+  useEffect(() => {
+    networkUserList({
+      net_id: 1
+    }).then(({data}) => {
+      setData(users = data);
+    })
+  }, []);
+
+  const columns: ColumnDef<NetworkUser.Info>[] = [
     {
       id: "select",
       header: ({table}) => (
@@ -180,11 +108,13 @@ const ManageUsers = () => {
         const user = row.original
         return (
           <div className="grid gap-1">
-            <p className="text-sm font-medium leading-none">
-              {user.name}
-            </p>
+            {user.user_nickname && (
+              <p className="text-sm font-medium leading-none">
+                {user.user_nickname}
+              </p>
+            )}
             <p className="text-sm text-muted-foreground">
-              {user.email}
+              {user.user_email}
             </p>
           </div>
         )
@@ -195,11 +125,11 @@ const ManageUsers = () => {
       header: "Role",
     },
     {
-      accessorKey: "joined",
+      accessorKey: "created_at",
       header: "Joined",
     },
     {
-      accessorKey: "last_seen",
+      accessorKey: "updated_at",
       header: "Last Seen",
     },
     {
@@ -218,7 +148,7 @@ const ManageUsers = () => {
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
               <DropdownMenuItem
-                onClick={() => navigator.clipboard.writeText(user.id)}
+                onClick={() => navigator.clipboard.writeText(`${user.user_id}`)}
               >
                 Copy ID
               </DropdownMenuItem>
@@ -419,9 +349,8 @@ const ManageUsers = () => {
               const {value} = e.target;
               setData(users.filter(user => {
                 return (
-                  user.name.toLowerCase().includes(value.toLowerCase()) ||
-                  user.email.toLowerCase().includes(value.toLowerCase()) ||
-                  user.role.toLowerCase().includes(value.toLowerCase())
+                  `${user.user_id}`.includes(value.toLowerCase()) ||
+                  `${user.role}`.includes(value.toLowerCase())
                 );
               }))
             }}
