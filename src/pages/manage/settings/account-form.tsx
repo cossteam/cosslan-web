@@ -15,11 +15,12 @@ import {
 import {Input} from "@/components/ui/input"
 import {userState} from "@/lib/state.ts";
 import {Switch} from "@/components/ui/switch.tsx";
-import {userSettingInfo, userSettingSave} from "@/api/modules/user-setting.ts";
+import {userSettingInfo, userSettingUpdate} from "@/api/modules/user-setting.ts";
 import {useEffect, useState} from "react";
-import {userSave} from "@/api/modules/user.ts";
+import {userUpdate} from "@/api/modules/user.ts";
 import {Loader2} from "lucide-react";
 import {toast} from "@/components/ui/use-toast.ts";
+import utils from "@/lib/utils.ts";
 
 
 const accountFormSchema = z.object({
@@ -47,29 +48,50 @@ export default function AccountForm() {
   const form = useForm<AccountFormValues>({
     resolver: zodResolver(accountFormSchema),
     defaultValues: {
-      nickname: userState.getState().nickname,
-      email: userState.getState().email,
+      nickname: '',
+      email: '',
       invite_approval: false,
     },
   })
+
+  useEffect(() => {
+    userState.subscribe(
+      state => state,
+      user => {
+        form.setValue("nickname", user.nickname || "")
+        form.setValue("email", user.email || "")
+      },
+      {
+        fireImmediately: true,
+      }
+    )
+    setIsLoad(true)
+    userSettingInfo({
+      name: "account"
+    }).then(({data}) => {
+      form.setValue("invite_approval", !!utils.getObject(data.content, 'invite_approval'))
+    }).finally(() => {
+      setIsLoad(false)
+    })
+  }, [form]);
 
   async function onSubmit(data: AccountFormValues) {
     if (isLoad) {
       return
     }
     setIsLoad(true)
-    await userSettingSave({
-      name: "approval",
+    await userSettingUpdate({
+      name: "account",
       content: {
-        invite_approval: data.invite_approval ? 1 : 0
+        invite_approval: data.invite_approval
       }
     })
-    await userSave({
+    await userUpdate({
       nickname: data.nickname
     }).then(({data}) => {
-      userState.setState(Object.assign(userState.getState(), {
+      userState.setState({
         nickname: data.nickname
-      }))
+      })
     })
     setIsLoad(false)
     toast({
@@ -77,24 +99,6 @@ export default function AccountForm() {
       description: "success",
     })
   }
-
-  useEffect(() => {
-    userState.subscribe(
-      state => [state.nickname, state.email],
-      ([nickname, email]) => {
-        form.setValue("nickname", nickname || "")
-        form.setValue("email", email || "")
-      },
-      {
-        fireImmediately: true,
-      }
-    )
-    userSettingInfo({
-      name: "approval"
-    }).then(({data}) => {
-      form.setValue("invite_approval", !!data.content.invite_approval)
-    })
-  }, [form]);
 
   return (
     <Form {...form}>

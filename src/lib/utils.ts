@@ -3,6 +3,7 @@ import {twMerge} from "tailwind-merge"
 import React from "react";
 import {alerter} from "@/components/ui+/use-alert.ts";
 import {userState} from "@/lib/state.ts";
+import {userLogout} from "@/api/modules/user.ts";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -19,6 +20,7 @@ export function onLogout(event: React.MouseEvent<HTMLAnchorElement>) {
         description: "Are you sure you want to logout?",
         onOk: () => {
           userState.setState({user_id: 0})
+          userLogout()
         },
       })
     }
@@ -474,6 +476,30 @@ const utils = {
     }
     return utils.rightDelete(url.replace('?&', '?'), '?');
   },
+
+  /**
+   * 名字缩写
+   * @param name
+   */
+  abbreviatedName(name: string) {
+    return name.split(" ").map((n) => n[0]).join("").substring(0, 2);
+  },
+
+  /**
+   * 流量转换
+   * @param value
+   */
+  trafficConversion(value: number) {
+    const units = ['B', 'KB', 'MB', 'GB', 'TB'];
+    let unitIndex = 0;
+
+    while (value >= 1024 && unitIndex < units.length - 1) {
+      value /= 1024;
+      unitIndex++;
+    }
+
+    return `${value.toFixed(2)}${units[unitIndex]}`;
+  }
 };
 
 export default utils

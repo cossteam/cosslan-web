@@ -19,8 +19,8 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover"
 import {Button} from "@/components/ui/button"
-import {useState} from "react";
-import {cn, onLogout} from "@/lib/utils";
+import {useEffect, useState} from "react";
+import utils, {cn, onLogout} from "@/lib/utils";
 import {userState} from "@/lib/state.ts";
 import * as React from "react";
 import {CaretSortIcon, CheckIcon, PlusCircledIcon} from "@radix-ui/react-icons";
@@ -87,6 +87,7 @@ const ManageNav = ({
   const {t} = useTranslation();
   const location = useLocation();
 
+  const [userInfo, setUserInfo] = useState(userState.getState())
   const [networkOpen, setNetworkOpen] = React.useState(false)
   const [networkDialog, setNetworkDialog] = React.useState(false)
   const [networkSelected, setNetworkSelected] = React.useState(
@@ -133,6 +134,8 @@ const ManageNav = ({
       ],
     },
   ]
+
+  useEffect(() => userState.subscribe(setUserInfo), []);
 
   return (
     <nav className="flex flex-col h-full">
@@ -311,16 +314,16 @@ const ManageNav = ({
             <PopoverTrigger asChild>
               <div className="flex flex-row justify-center items-center cursor-pointer">
                 <Avatar className="shrink-0 size-8">
-                  <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn"/>
-                  <AvatarFallback>L</AvatarFallback>
+                  <AvatarImage src={userInfo.avatar} alt={userInfo.nickname}/>
+                  <AvatarFallback>{utils.abbreviatedName(userInfo.nickname || 'C')}</AvatarFallback>
                 </Avatar>
-                <span className="ml-2">Your Account</span>
+                <span className="ml-2">{userInfo.nickname || 'Your Account'}</span>
               </div>
             </PopoverTrigger>
             <PopoverContent sideOffset={12} className="w-auto">
               <div className="p-2 pt-0 pb-3">
                 <p className="text-sm text-muted-foreground">
-                  {userState.getState().email}
+                  {userInfo.email}
                 </p>
               </div>
               <div className="flex flex-col space-y-1 -mb-2">

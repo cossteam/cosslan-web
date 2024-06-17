@@ -34,17 +34,15 @@ type AppearanceFormValues = z.infer<typeof appearanceFormSchema>
 export default function AppearanceForm() {
   const { toast } = useToast()
 
-  const defaultValues: Partial<AppearanceFormValues> = {
-    language: uiState.getState().language,
-    theme: uiState.getState().theme,
-  }
-
   const form = useForm<AppearanceFormValues>({
     resolver: zodResolver(appearanceFormSchema),
-    defaultValues,
+    defaultValues: {
+      language: uiState.getState().language,
+      theme: uiState.getState().theme,
+    },
   })
 
-  async function onSubmit(data: AppearanceFormValues) {
+  function onSubmit(data: AppearanceFormValues) {
     ThemeTool.setTheme(data.theme);
     LanguageTool.setLanguage(data.language);
     toast({
@@ -99,7 +97,7 @@ export default function AppearanceForm() {
               <RadioGroup
                 onValueChange={field.onChange}
                 defaultValue={field.value}
-                className="grid max-w-xl grid-cols-3 gap-8 pt-2"
+                className="grid max-w-xl grid-cols-2 gap-8 pt-2 sm:grid-cols-3"
               >
                 <FormItem>
                   <FormLabel className="[&:has([data-state=checked])>div]:border-primary">

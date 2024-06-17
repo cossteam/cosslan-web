@@ -29,6 +29,7 @@ import {zodResolver} from "@hookform/resolvers/zod";
 import {userState} from "@/lib/state.ts";
 import {Loader2} from "lucide-react";
 import {userLogin, userReg} from "@/api/modules/user.ts";
+import {alerter} from "@/components/ui+/use-alert.ts";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -67,8 +68,8 @@ const Login = () => {
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginFormSchema),
     defaultValues: {
-      email: userState.getState().email || "test@cosslan.com",
-      password: "123456",
+      email: userState.getState().email,
+      password: "",
       confirmPassword: "",
     },
   })
@@ -76,12 +77,19 @@ const Login = () => {
   const onSubmit = (data: LoginFormValues) => {
     setIsLoad(true);
     (isReg ? userReg : userLogin)(data)
-      .then((info) => {
-        userState.setState(info.data)
+      .then(({data}) => {
+        userState.setState(data)
         navigate("/manage");
       })
-      .catch((err) => {
-        console.log(err);
+      .catch(({msg}) => {
+        alerter({
+          title: (
+            <div className="text-red-600">Error</div>
+          ),
+          description: msg,
+          cancelHide: true,
+          okText: "OK",
+        })
       })
       .finally(() => {
         setIsLoad(false);

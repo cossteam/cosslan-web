@@ -12,7 +12,7 @@ export namespace UserSetting {
     name: string,
   }
 
-  export type SaveRequest = {
+  export type UpdateRequest = {
     name: string,
     content: object,
   }

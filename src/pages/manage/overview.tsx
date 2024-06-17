@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/card"
 
 import {Machine} from "@/pages/manage/machines.tsx";
+import utils from "@/lib/utils.ts";
 
 const barData = [
   {"name": "1st", "total": Math.floor(Math.random() * 50000000000) + 10000000000},
@@ -86,23 +87,6 @@ const machines: Machine[] = [
 ];
 
 const ManageOverview = () => {
-  const abbreviatedName = (name: string) => {
-    return name.split(" ").map((n) => n[0]).join("").substring(0, 2);
-  }
-
-  const trafficConversion = (value: number) => {
-    const units = ['B', 'KB', 'MB', 'GB', 'TB'];
-    let unitIndex = 0;
-
-    while (value >= 1024 && unitIndex < units.length - 1) {
-      value /= 1024;
-      unitIndex++;
-    }
-
-    return `${value.toFixed(2)}${units[unitIndex]}`;
-  }
-
-
   return (
     <div className="space-y-6 p-6 md:p-10">
       <header className="flex space-y-0.5 gap-2">
@@ -201,7 +185,7 @@ const ManageOverview = () => {
                   fontSize={12}
                   tickLine={false}
                   axisLine={false}
-                  tickFormatter={trafficConversion}
+                  tickFormatter={utils.trafficConversion}
                 />
                 <Bar
                   dataKey="total"
@@ -224,7 +208,7 @@ const ManageOverview = () => {
             {machines.map((machine) => (
               <div key={machine.id} className="flex items-center space-x-4">
                 <Avatar className="flex-shrink-0 flex h-9 w-9 items-center justify-center">
-                  <AvatarFallback>{abbreviatedName(machine.name)}</AvatarFallback>
+                  <AvatarFallback>{utils.abbreviatedName(machine.name)}</AvatarFallback>
                 </Avatar>
                 <div className="flex-shrink-0 space-y-1">
                   <p className="text-sm font-medium leading-none">{machine.name}</p>

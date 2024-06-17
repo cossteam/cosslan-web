@@ -5,6 +5,6 @@ export const userSettingInfo = (params: UserSetting.GetRequest) => {
     return http.get<UserSetting.Info>('user_setting/info', params)
 };
 
-export const userSettingSave = (params: UserSetting.SaveRequest) => {
-    return http.post<UserSetting.Info>('user_setting/save', params)
+export const userSettingUpdate = (params: UserSetting.UpdateRequest) => {
+    return http.post<UserSetting.Info>('user_setting/update', params)
 };

@@ -9,10 +9,14 @@ export const userLogin = (params: User.LoginRequest) => {
     return http.post<User.Info>('user/login', params)
 };
 
+export const userLogout = () => {
+    return http.get('user/logout')
+};
+
 export const userReg = (params: User.LoginRequest) => {
     return http.post<User.Info>('user/reg', params)
 };
 
-export const userSave = (params: User.SaveRequest) => {
-    return http.post<User.Info>('user/save', params)
+export const userUpdate = (params: User.UpdateRequest) => {
+    return http.post<User.Info>('user/update', params)
 };

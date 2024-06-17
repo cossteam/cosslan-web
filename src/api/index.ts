@@ -1,15 +1,12 @@
 import axios, {AxiosInstance, AxiosRequestConfig} from 'axios'
 import utils from "../lib/utils";
-import {Response} from "./types/base";
+import {Response} from "./types/_base";
 import {userState} from "@/lib/state";
 
 const config = {
   baseURL: '/api',        // 所有的请求地址前缀部分
   timeout: 60000,         // 请求超时时间毫秒
   withCredentials: true,  // 异步请求携带cookie
-  headers: {
-    Token: userState.getState().token,
-  },
 }
 
 class RequestHttp {
@@ -26,6 +23,7 @@ class RequestHttp {
      */
     this.service.interceptors.request.use(
       function (config) {
+        config.headers.Token = userState.getState().token
         return config
       },
       function (error) {
@@ -45,15 +43,19 @@ class RequestHttp {
         const dataAxios = response.data
         //
         if (!utils.isJson(dataAxios)) {
-          return Promise.reject({code: 0, msg: "Format error", data: dataAxios})
+          return Promise.reject({code: 422, msg: "Format error", data: dataAxios})
         }
         if (dataAxios.code !== 200) {
-          if (dataAxios.code === 301 || dataAxios.code === 401) {
+          if (dataAxios.code === 301 || dataAxios.code === 302) {
+            // 重定向
             const params = {
-              result_code: dataAxios.code,
-              result_msg: encodeURIComponent(dataAxios.msg),
+              code: dataAxios.code,
+              msg: encodeURIComponent(dataAxios.msg),
             }
             window.location.href = utils.urlAddParams(window.location.href, params)
+          } else if (dataAxios.code === 401) {
+            // 身份验证失败
+            userState.setState({user_id: 0})
           }
           return Promise.reject(dataAxios)
         }
@@ -61,7 +63,7 @@ class RequestHttp {
       },
       function (error) {
         // 超出 2xx 范围的状态码都会触发该函数。
-        return Promise.reject({code: 0, msg: "Request failed", data: error})
+        return Promise.reject({code: 421, msg: "Request failed", data: error})
       }
     )
   }

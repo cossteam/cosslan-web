@@ -13,6 +13,10 @@ import {
 } from "@/components/ui/form"
 import { Switch } from "@/components/ui/switch"
 import { toast } from "@/components/ui/use-toast"
+import {userSettingInfo, userSettingUpdate} from "@/api/modules/user-setting.ts";
+import {useEffect, useState} from "react";
+import utils from "@/lib/utils.ts";
+import {Loader2} from "lucide-react";
 
 const notificationsFormSchema = z.object({
   marketing_emails: z.boolean().default(false).optional(),
@@ -21,26 +25,45 @@ const notificationsFormSchema = z.object({
 
 type NotificationsFormValues = z.infer<typeof notificationsFormSchema>
 
-// This can come from your database or API.
-const defaultValues: Partial<NotificationsFormValues> = {
-  marketing_emails: false,
-  security_emails: true,
-}
-
 export default function NotificationsForm() {
+  const [isLoad, setIsLoad] = useState(false)
+
   const form = useForm<NotificationsFormValues>({
     resolver: zodResolver(notificationsFormSchema),
-    defaultValues,
+    defaultValues: {
+      marketing_emails: false,
+      security_emails: false,
+    },
   })
 
-  function onSubmit(data: NotificationsFormValues) {
+  useEffect(() => {
+    setIsLoad(true)
+    userSettingInfo({
+      name: "notification"
+    }).then(({data}) => {
+      form.setValue("marketing_emails", !!utils.getObject(data.content, 'marketing_emails'))
+      form.setValue("security_emails", !!utils.getObject(data.content, 'security_emails'))
+    }).finally(() => {
+      setIsLoad(false)
+    })
+  }, [form]);
+
+  async function onSubmit(data: NotificationsFormValues) {
+    if (isLoad) {
+      return
+    }
+    setIsLoad(true)
+    await userSettingUpdate({
+      name: "notification",
+      content: {
+        marketing_emails: data.marketing_emails,
+        security_emails: data.security_emails,
+      }
+    })
+    setIsLoad(false)
     toast({
-      title: "You submitted the following values:",
-      description: (
-        <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-          <code className="text-white">{JSON.stringify(data, null, 2)}</code>
-        </pre>
-      ),
+      title: "Account updated.",
+      description: "success",
     })
   }
 
@@ -95,7 +118,12 @@ export default function NotificationsForm() {
             />
           </div>
         </div>
-        <Button type="submit">Update notifications</Button>
+        <Button disabled={isLoad} type="submit">
+          {isLoad && (
+            <Loader2 className="mr-2 h-4 w-4 animate-spin"/>
+          )}
+          Update notifications
+        </Button>
       </form>
     </Form>
   )

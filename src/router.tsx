@@ -1,6 +1,7 @@
 import routes from '~react-pages'
 import {useLocation, useRoutes} from 'react-router-dom'
 import {userState} from "@/lib/state.ts";
+import {userLogout} from "@/api/modules/user.ts";
 
 
 const Router = () => {
@@ -9,6 +10,7 @@ const Router = () => {
 
   if (/\/logout$/i.test(location.pathname)) {
     userState.setState({user_id: 0})
+    userLogout()
     return null
   }
 
