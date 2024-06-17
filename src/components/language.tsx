@@ -10,7 +10,7 @@ import {
 
 import {useTranslation} from 'react-i18next';
 import {setLanguage as updateLanguage} from "@/i18n/config";
-import {uiState} from "@/lib/state.ts";
+import {localState} from "@/lib/state.ts";
 
 const LanguageList = [
   {type: 'en', label: 'English'},
@@ -18,12 +18,12 @@ const LanguageList = [
   {type: 'zhTW', label: '繁体中文'},
 ]
 const LanguageTool = {
-  default: uiState.getState().language || 'en',
+  default: localState.getState().language || 'en',
   setLanguage: (language: string) => {
     if (LanguageList.find(item => item.type === language) === undefined) {
       language = LanguageList[0].type
     }
-    uiState.setState({language})
+    localState.setState({language})
     //
     updateLanguage(language).then(() => {
       const root = window.document.documentElement

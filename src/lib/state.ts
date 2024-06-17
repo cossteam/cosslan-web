@@ -14,20 +14,21 @@ const userState = create(
   ))
 )
 
-const uiState = create(
+const localState = create(
   persist(
     () => ({
       theme: '',
       language: '',
+      networkSelectedId: 0,
     }),
     {
-      name: 'store_ui',
+      name: 'store_local',
       storage: createJSONStorage(() => localStorage),
     },
   ),
 )
 
-export {userState, uiState};
+export {userState, localState};
 
 
 // ************************************************************* //

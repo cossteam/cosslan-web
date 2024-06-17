@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import {useTranslation} from "react-i18next"
 import {useEffect, useState} from "react"
-import {uiState} from "@/lib/state.ts";
+import {localState} from "@/lib/state.ts";
 
 const ThemeList: string[] = [
   'light',
@@ -17,12 +17,12 @@ const ThemeList: string[] = [
   'system'
 ];
 const ThemeTool = {
-  default: uiState.getState().theme || 'system',
+  default: localState.getState().theme || 'system',
   setTheme: (theme: string) => {
     if (!ThemeList.includes(theme)) {
       theme = ThemeList[0]
     }
-    uiState.setState({theme})
+    localState.setState({theme})
     //
     if (theme === "system") {
       theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"
@@ -46,7 +46,7 @@ export function Theme({showLabel = false}) {
   const [themeName, setThemeName] = useState<string>(ThemeTool.default)
 
   useEffect(() => {
-    uiState.subscribe(({theme}) => {
+    localState.subscribe(({theme}) => {
       setThemeName(theme)
     })
   }, [themeName])

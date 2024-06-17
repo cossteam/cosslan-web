@@ -1,6 +1,6 @@
 import {Link, useLocation} from "react-router-dom";
 import {useTranslation} from "react-i18next";
-import {Menu as MenuIcon, X as CloseIcon, Orbit as LogoIcon} from "lucide-react"
+import {Menu as MenuIcon, X as CloseIcon, Orbit as LogoIcon, Loader2} from "lucide-react"
 
 import {
   Accordion,
@@ -21,7 +21,7 @@ import {
 import {Button} from "@/components/ui/button"
 import {useEffect, useState} from "react";
 import utils, {cn, onLogout} from "@/lib/utils";
-import {userState} from "@/lib/state.ts";
+import {localState, userState} from "@/lib/state.ts";
 import * as React from "react";
 import {CaretSortIcon, CheckIcon, PlusCircledIcon} from "@radix-ui/react-icons";
 import {Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList, CommandSeparator} from "@/components/ui/command.tsx";
@@ -29,49 +29,8 @@ import {Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, Di
 import {Label} from "@/components/ui/label.tsx";
 import {Input} from "@/components/ui/input.tsx";
 import {RadioGroup, RadioGroupItem} from "@/components/ui/radio-group.tsx";
-
-const networkGroups = [
-  {
-    label: "Networks",
-    networks: [
-      {
-        label: "100.100.0.0/22",
-        value: "network-BCGOPNGO36TFI6FRYPTFIGAKWI",
-      },
-      {
-        label: "100.200.0.0/22",
-        value: "network-CDGOPNGO36TFI6FRYPTFIGAKWI",
-      },
-    ],
-  },
-]
-
-const ipv4s = [
-  "10.147.17.*",
-  "10.147.18.*",
-  "10.147.19.*",
-  "10.147.20.*",
-  "10.144.*.*",
-  "10.241.*.*",
-  "10.242.*.*",
-  "10.243.*.*",
-  "10.244.*.*",
-  "172.22.*.*",
-  "172.23.*.*",
-  "172.24.*.*",
-  "172.25.*.*",
-  "172.26.*.*",
-  "172.27.*.*",
-  "172.28.*.*",
-  "172.29.*.*",
-  "172.30.*.*",
-  "192.168.191.*",
-  "192.168.192.*",
-  "192.168.193.*",
-  "192.168.194.*",
-  "192.168.195.*",
-  "192.168.196.*"
-]
+import {networkCreate, networkIpv4Rand, networkList} from "@/api/modules/network.ts";
+import {Network} from "@/api/types/network.ts";
 
 export interface ManageNavProps {
   openMenu?: boolean;
@@ -88,17 +47,17 @@ const ManageNav = ({
   const location = useLocation();
 
   const [userInfo, setUserInfo] = useState(userState.getState())
+
   const [networkOpen, setNetworkOpen] = React.useState(false)
   const [networkDialog, setNetworkDialog] = React.useState(false)
-  const [networkSelected, setNetworkSelected] = React.useState(
-    networkGroups[0].networks[0]
-  )
-
-  const [defaultIpv4, setDefaultIpv4] = React.useState(ipv4s[Math.floor(Math.random() * ipv4s.length)])
+  const [networkSelected, setNetworkSelected] = React.useState<Network.Info>({ipv4: 'Loading...', net_id: 0})
+  const [networkItems, setNetworkItems] = React.useState<Network.Info[]>([])
+  const [networkIpv4s, setNetworkIpv4s] = React.useState<string[]>([])
+  const [networkFormData, setNetworkFormData] = React.useState({ipv4: '', name:'', load: false})
 
   const [openUserAvatar, setOpenUserAvatar] = useState(false)
 
-  const navItems = [
+  const navigationItems = [
     {
       title: t("pages.manage.overview"),
       href: "/manage",
@@ -135,7 +94,37 @@ const ManageNav = ({
     },
   ]
 
-  useEffect(() => userState.subscribe(setUserInfo), []);
+  const onNetworkCreate = () => {
+    setNetworkFormData({...networkFormData, load: true})
+    networkCreate(networkFormData as Network.CreateRequest).then(({data}) => {
+      setNetworkItems([data, ...networkItems])
+      setNetworkSelected(data)
+      setNetworkDialog(false)
+    }).finally(() => {
+      setNetworkFormData({...networkFormData, load: false})
+    })
+  }
+
+  useEffect(() => {
+    userState.subscribe(setUserInfo)
+    networkList().then(({data}) => {
+      setNetworkItems(data)
+      setNetworkSelected(data.find(({net_id}) => net_id === localState.getState().networkSelectedId) || data[0])
+    })
+  }, []);
+
+  useEffect(() => {
+    networkIpv4Rand({num: 18}).then(({data}) => {
+      setNetworkIpv4s(data)
+      setNetworkFormData({...networkFormData, ipv4: data[Math.floor(Math.random() * data.length)]})
+    })
+  }, [networkDialog]);
+
+  useEffect(() => {
+    if (networkSelected.net_id) {
+      localState.setState({networkSelectedId: networkSelected.net_id})
+    }
+  }, [networkSelected]);
 
   return (
     <nav className="flex flex-col h-full">
@@ -181,7 +170,7 @@ const ManageNav = ({
                 className="justify-between shrink-0 w-full border-0 rounded-none border-b pr-3"
               >
                 <div className="mr-2 max-w-full truncate opacity-80">
-                  Network: {networkSelected.label}
+                  Network: {networkSelected.ipv4}
                 </div>
                 <CaretSortIcon className="ml-auto h-4 w-4 shrink-0 opacity-50"/>
               </Button>
@@ -191,32 +180,30 @@ const ManageNav = ({
                 <CommandList>
                   <CommandInput placeholder="Search network..."/>
                   <CommandEmpty>No network found.</CommandEmpty>
-                  {networkGroups.map((group) => (
-                    <CommandGroup key={group.label} heading={group.label}>
-                      {group.networks.map((network) => (
-                        <CommandItem
-                          key={network.value}
-                          onSelect={() => {
-                            setNetworkSelected(network)
-                            setNetworkOpen(false)
-                          }}
-                          className="text-sm"
-                        >
-                          <div className="truncate">
-                            {network.label}
-                          </div>
-                          <CheckIcon
-                            className={cn(
-                              "ml-auto h-4 w-4 shrink-0",
-                              networkSelected.value === network.value
-                                ? "opacity-100"
-                                : "opacity-0"
-                            )}
-                          />
-                        </CommandItem>
-                      ))}
-                    </CommandGroup>
-                  ))}
+                  <CommandGroup>
+                    {networkItems.map((network) => (
+                      <CommandItem
+                        key={network.net_id}
+                        onSelect={() => {
+                          setNetworkSelected(network)
+                          setNetworkOpen(false)
+                        }}
+                        className="text-sm"
+                      >
+                        <div className="truncate">
+                          {network.ipv4}
+                        </div>
+                        <CheckIcon
+                          className={cn(
+                            "ml-auto h-4 w-4 shrink-0",
+                            networkSelected.net_id === network.net_id
+                              ? "opacity-100"
+                              : "opacity-0"
+                          )}
+                        />
+                      </CommandItem>
+                    ))}
+                  </CommandGroup>
                 </CommandList>
                 <CommandSeparator/>
                 <CommandList>
@@ -248,13 +235,17 @@ const ManageNav = ({
               <div className="space-y-4 py-2 pb-4">
                 <div className="space-y-3">
                   <Label htmlFor="name">Network name</Label>
-                  <Input id="name" placeholder="Home Work"/>
+                  <Input id="name" placeholder="Network name" value={networkFormData.name} onChange={({target}) => {
+                    setNetworkFormData({...networkFormData, name: target.value})
+                  }}/>
                 </div>
                 <div className="space-y-4">
                   <Label htmlFor="name">IPv4 range</Label>
-                  <RadioGroup defaultValue={defaultIpv4} onValueChange={setDefaultIpv4}>
+                  <RadioGroup value={networkFormData.ipv4} onValueChange={(val) => {
+                    setNetworkFormData({...networkFormData, ipv4: val})
+                  }}>
                     <div className="grid grid-cols-3 gap-x-4">
-                      {ipv4s.map((ipv4, key) => (
+                      {networkIpv4s.map((ipv4, key) => (
                         <Label key={key} htmlFor={ipv4} className="flex items-center space-x-2 py-2.5">
                           <RadioGroupItem value={ipv4} id={ipv4}/>
                           <span>{ipv4}</span>
@@ -269,14 +260,19 @@ const ManageNav = ({
               <Button variant="outline" onClick={() => setNetworkDialog(false)}>
                 Cancel
               </Button>
-              <Button type="submit">Create</Button>
+              <Button type="submit" disabled={networkFormData.load} onClick={onNetworkCreate}>
+                {networkFormData.load && (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin"/>
+                )}
+                Create
+              </Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>
 
         <div className="flex-1 space-y-4 py-4 overflow-y-auto overflow-x-hidden">
           <div className="px-3 space-y-1">
-            {navItems.map((item, key) => {
+            {navigationItems.map((item, key) => {
               if (item.children) {
                 return (
                   <Accordion type="single" collapsible key={key}>

@@ -5,15 +5,15 @@ import {getLocalState, setLocalState} from '@/lib/state.ts';
 import translationEN from './en/translation.json';
 import translationCN from './zh-cn/translation.json';
 import translationTW from './zh-tw/translation.json';
-import {uiState} from "@/lib/state.ts";
+import {localState} from "@/lib/state.ts";
 
 export function setLanguage(language: string) {
-  uiState.setState({language})
+  localState.setState({language})
   return i18next.changeLanguage(language);
 }
 
 i18next.use(initReactI18next).init({
-  lng: uiState.getState().language || 'en',
+  lng: localState.getState().language || 'en',
   debug: true,
   resources: {
     en: {

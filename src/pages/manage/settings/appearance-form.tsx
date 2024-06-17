@@ -16,7 +16,7 @@ import {RadioGroup, RadioGroupItem} from "@/components/ui/radio-group"
 import {Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select.tsx";
 import {LanguageTool, LanguageList} from "@/components/language.tsx";
 import {ThemeList, ThemeTool} from "@/components/theme.tsx";
-import {uiState} from "@/lib/state.ts";
+import {localState} from "@/lib/state.ts";
 import {useToast} from "@/components/ui/use-toast.ts";
 
 const appearanceFormSchema = z.object({
@@ -37,8 +37,8 @@ export default function AppearanceForm() {
   const form = useForm<AppearanceFormValues>({
     resolver: zodResolver(appearanceFormSchema),
     defaultValues: {
-      language: uiState.getState().language,
-      theme: uiState.getState().theme,
+      language: localState.getState().language,
+      theme: localState.getState().theme,
     },
   })
 
