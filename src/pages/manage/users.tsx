@@ -1,6 +1,6 @@
 import {useEffect, useMemo, useState} from "react";
 import {Button} from "@/components/ui/button.tsx";
-import {ChevronDown, ChevronRight, Columns2, ContactRound, MoreHorizontal, Search, Stamp} from "lucide-react";
+import {ChevronDown, ChevronRight, Columns2, ContactRound, Loader2, MoreHorizontal, Search, Stamp} from "lucide-react";
 import {Input} from "@/components/ui/input.tsx";
 import {Separator} from "@/components/ui/separator.tsx";
 
@@ -21,7 +21,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 
 import {DataTable} from "@/components/ui+/data-table.tsx";
-import {cn} from "@/lib/utils.ts";
+import utils, {cn} from "@/lib/utils.ts";
 import {Link} from "react-router-dom";
 import {Dialog, DialogFooter, DialogHeader, DialogTitle} from "@/components/ui/dialog";
 import {DialogContent} from "@/components/ui/dialog.tsx";
@@ -29,15 +29,20 @@ import {Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectVal
 import {z} from "zod";
 import {useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
-import {toast} from "@/components/ui/use-toast.ts";
 import {Form, FormControl, FormField, FormItem, FormMessage} from "@/components/ui/form.tsx";
-import {networkUserList} from "@/api/modules/network-user.ts";
+import {networkUserInvite, networkUserList} from "@/api/modules/network-user.ts";
 import {NetworkUser} from "@/api/types/network-user.ts";
+import {UserSelect} from "@/components/user-select.tsx";
+import {localState} from "@/lib/state.ts";
+import {toast} from "@/components/ui/use-toast.ts";
+import {alerter} from "@/components/ui+/use-alert.ts";
 
 let users: NetworkUser.InfoJoinUser[] = [];
 
 const inviteFormSchema = z.object({
-  email: z.string().email(),
+  user_id: z.string().min(1, {
+    message: "Please select the users you want to invite.",
+  }),
   role: z.string().optional(),
 })
 
@@ -49,8 +54,8 @@ const ManageUsers = () => {
 
   const [data, setData] = useState<NetworkUser.InfoJoinUser[]>(useMemo(() => users, []));
   const [rowSelection, setRowSelection] = useState({})
-
   const [openInvite, setOpenInvite] = useState(false)
+  const [loadInvite, setLoadInvite] = useState(false)
 
   const inviteForm = useForm<InviteFormValues>({
     resolver: zodResolver(inviteFormSchema),
@@ -59,20 +64,40 @@ const ManageUsers = () => {
     },
   })
 
-  function onInviteSubmit(data: InviteFormValues) {
-    toast({
-      title: "You submitted the following values:",
-      description: (
-        <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-          <code className="text-white">{JSON.stringify(data, null, 2)}</code>
-        </pre>
-      ),
+  const onInviteSubmit = (data: InviteFormValues) => {
+    setLoadInvite(true)
+    networkUserInvite({
+      net_id: localState.getState().networkSelectedId,
+      user_id: data.user_id,
+      role: data.role || 'member',
+    }).then(() => {
+      setOpenInvite(false)
+      toast({
+        title: "User invited",
+        description: "The user has been invited to join the network.",
+      })
+      networkUserList({
+        net_id: localState.getState().networkSelectedId,
+      }).then(({data}) => {
+        setData(users = data);
+      })
+    }).catch(({msg}) => {
+      alerter({
+        title: (
+          <div className="text-red-600">Error</div>
+        ),
+        description: msg,
+        cancelHide: true,
+        okText: "OK",
+      })
+    }).finally(() => {
+      setLoadInvite(false)
     })
   }
 
   useEffect(() => {
     networkUserList({
-      net_id: 1
+      net_id: localState.getState().networkSelectedId,
     }).then(({data}) => {
       setData(users = data);
     })
@@ -123,6 +148,16 @@ const ManageUsers = () => {
     {
       accessorKey: "role",
       header: "Role",
+      cell: ({getValue}) => {
+        return utils.capitalizeFirstLetter(`${getValue()}`)
+      },
+    },
+    {
+      accessorKey: "state",
+      header: "State",
+      cell: ({getValue}) => {
+        return utils.capitalizeFirstLetter(`${getValue()}`)
+      },
     },
     {
       accessorKey: "created_at",
@@ -209,11 +244,11 @@ const ManageUsers = () => {
               <form onSubmit={inviteForm.handleSubmit(onInviteSubmit)} className="flex space-x-4">
                 <FormField
                   control={inviteForm.control}
-                  name="email"
+                  name="user_id"
                   render={({field}) => (
                     <FormItem className="flex-auto">
                       <FormControl>
-                        <Input placeholder="user@example.com" {...field} />
+                        <UserSelect className="w-full" onValueChange={field.onChange}/>
                       </FormControl>
                       <FormMessage/>
                     </FormItem>
@@ -228,7 +263,7 @@ const ManageUsers = () => {
                         <Select
                           onValueChange={field.onChange}
                           defaultValue={field.value}>
-                          <SelectTrigger className="w-full appearance-none font-normal">
+                          <SelectTrigger className="w-full appearance-none font-normal space-x-1">
                             <SelectValue/>
                           </SelectTrigger>
                           <SelectContent>
@@ -250,10 +285,16 @@ const ManageUsers = () => {
               <Button
                 type="submit"
                 className="px-5"
+                disabled={loadInvite}
                 onClick={() => {
                   inviteForm.handleSubmit(onInviteSubmit)()
                 }}
-              >Invite</Button>
+              >
+                {loadInvite && (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin"/>
+                )}
+                Invite
+              </Button>
             </DialogFooter>
           </div>
         </DialogContent>

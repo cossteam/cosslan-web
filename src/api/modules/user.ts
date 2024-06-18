@@ -20,3 +20,7 @@ export const userReg = (params: User.LoginRequest) => {
 export const userUpdate = (params: User.UpdateRequest) => {
     return http.post<User.Info>('user/update', params)
 };
+
+export const userSearch = (params: User.SearchRequest) => {
+    return http.post<User.InfoSimple[]>('user/search', params)
+};

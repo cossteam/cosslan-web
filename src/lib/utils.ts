@@ -482,7 +482,37 @@ const utils = {
    * @param name
    */
   abbreviatedName(name: string) {
-    return name.split(" ").map((n) => n[0]).join("").substring(0, 2);
+    return name.split(" ").map((n) => n[0]).join("").substring(0, 2).toUpperCase();
+  },
+
+  /**
+   * 名字生成颜色
+   * @param name
+   */
+  generateColorByName(name: string) {
+    let unicodeCode = '';
+    for (let i = 0; i < name.length; i++) {
+      unicodeCode += name.charCodeAt(i).toString(16);
+    }
+    const colorCode = parseInt(unicodeCode, 16) % 0xFFFFFF;
+    if (isNaN(colorCode) || colorCode < 0x100000) {
+      return "hsl(var(--muted))";
+    }
+    return '#' + colorCode.toString(16);
+  },
+
+  /**
+   * 首字母大写
+   * @param str
+   */
+  capitalizeFirstLetter(str?: string) {
+    if (!str) {
+      return str
+    }
+    if (str.length > 1) {
+      return str.charAt(0).toUpperCase() + str.slice(1);
+    }
+    return str.charAt(0).toUpperCase();
   },
 
   /**

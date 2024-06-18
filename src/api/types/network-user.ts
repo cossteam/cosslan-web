@@ -20,7 +20,7 @@ export namespace NetworkUser {
 
   export type InviteRequest = {
     net_id: number
-    email: string
-    role: number
+    user_id: string
+    role: string
   }
 }

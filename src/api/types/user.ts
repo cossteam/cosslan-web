@@ -9,6 +9,13 @@ export namespace User {
     updated_at?: string
   }
 
+  export type InfoSimple = {
+    user_id?: number
+    email?: string
+    nickname?: string
+    avatar?: string
+  }
+
   export type LoginRequest = {
     email: string,
     password: string,
@@ -16,5 +23,9 @@ export namespace User {
 
   export type UpdateRequest = {
     nickname: string,
+  }
+
+  export type SearchRequest = {
+    key: string,
   }
 }

@@ -64,7 +64,7 @@ export default function AppearanceForm() {
                   <Select
                     onValueChange={field.onChange}
                     defaultValue={field.value}>
-                    <SelectTrigger className="w-[200px] appearance-none font-normal">
+                    <SelectTrigger className="w-[200px] appearance-none font-normal space-x-1">
                       <SelectValue placeholder="Select a language"/>
                     </SelectTrigger>
                     <SelectContent>

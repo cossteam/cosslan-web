@@ -10,7 +10,6 @@ import {
 } from "@/components/ui/accordion"
 import {
   Avatar,
-  AvatarFallback,
   AvatarImage,
 } from "@/components/ui/avatar"
 import {
@@ -20,7 +19,7 @@ import {
 } from "@/components/ui/popover"
 import {Button} from "@/components/ui/button"
 import {useEffect, useState} from "react";
-import utils, {cn, onLogout} from "@/lib/utils";
+import {cn, onLogout} from "@/lib/utils";
 import {localState, userState} from "@/lib/state.ts";
 import * as React from "react";
 import {CaretSortIcon, CheckIcon, PlusCircledIcon} from "@radix-ui/react-icons";
@@ -31,6 +30,7 @@ import {Input} from "@/components/ui/input.tsx";
 import {RadioGroup, RadioGroupItem} from "@/components/ui/radio-group.tsx";
 import {networkCreate, networkIpv4Rand, networkList} from "@/api/modules/network.ts";
 import {Network} from "@/api/types/network.ts";
+import {AvatarFallbackByName} from "@/lib/utils+.tsx";
 
 export interface ManageNavProps {
   openMenu?: boolean;
@@ -311,7 +311,7 @@ const ManageNav = ({
               <div className="flex flex-row justify-center items-center cursor-pointer">
                 <Avatar className="shrink-0 size-8">
                   <AvatarImage src={userInfo.avatar} alt={userInfo.nickname}/>
-                  <AvatarFallback>{utils.abbreviatedName(userInfo.nickname || 'C')}</AvatarFallback>
+                  <AvatarFallbackByName name={userInfo.nickname || userInfo.email}/>
                 </Avatar>
                 <span className="ml-2">{userInfo.nickname || 'Your Account'}</span>
               </div>

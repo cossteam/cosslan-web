@@ -7,7 +7,6 @@ import {Bar, BarChart, ResponsiveContainer, XAxis, YAxis} from "recharts"
 
 import {
   Avatar,
-  AvatarFallback,
 } from "@/components/ui/avatar"
 import {
   Card,
@@ -19,6 +18,7 @@ import {
 
 import {Machine} from "@/pages/manage/machines.tsx";
 import utils from "@/lib/utils.ts";
+import {AvatarFallbackByName} from "@/lib/utils+.tsx";
 
 const barData = [
   {"name": "1st", "total": Math.floor(Math.random() * 50000000000) + 10000000000},
@@ -208,7 +208,7 @@ const ManageOverview = () => {
             {machines.map((machine) => (
               <div key={machine.id} className="flex items-center space-x-4">
                 <Avatar className="flex-shrink-0 flex h-9 w-9 items-center justify-center">
-                  <AvatarFallback>{utils.abbreviatedName(machine.name)}</AvatarFallback>
+                  <AvatarFallbackByName name={machine.name}/>
                 </Avatar>
                 <div className="flex-shrink-0 space-y-1">
                   <p className="text-sm font-medium leading-none">{machine.name}</p>
