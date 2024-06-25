@@ -49,6 +49,7 @@ const inviteFormSchema = z.object({
 type InviteFormValues = z.infer<typeof inviteFormSchema>
 
 const ManageUsers = () => {
+  const [networkSelectedId, setNetworkSelectedId] = useState(localState.getState().networkSelectedId)
   const [inviteUserInfo, setInviteUserInfo] = useState(false)
   const [userManageInfo, setUserManageInfo] = useState(false)
 
@@ -67,7 +68,7 @@ const ManageUsers = () => {
   const onInviteSubmit = (data: InviteFormValues) => {
     setLoadInvite(true)
     networkUserInvite({
-      network_id: localState.getState().networkSelectedId,
+      network_id: networkSelectedId,
       user_id: data.user_id,
       role: data.role || 'member',
     }).then(() => {
@@ -77,7 +78,7 @@ const ManageUsers = () => {
         description: "The user has been invited to join the network.",
       })
       networkUserList({
-        network_id: localState.getState().networkSelectedId,
+        network_id: networkSelectedId,
       }).then(({data}) => {
         setData(users = data.list);
       })
@@ -96,8 +97,11 @@ const ManageUsers = () => {
   }
 
   useEffect(() => {
+    localState.subscribe(({networkSelectedId}) => {
+      setNetworkSelectedId(networkSelectedId)
+    })
     networkUserList({
-      network_id: localState.getState().networkSelectedId,
+      network_id: networkSelectedId,
     }).then(({data}) => {
       setData(users = data.list);
     })
@@ -248,7 +252,7 @@ const ManageUsers = () => {
                   render={({field}) => (
                     <FormItem className="flex-auto">
                       <FormControl>
-                        <UserSelect className="w-full" onValueChange={field.onChange}/>
+                        <UserSelect className="w-full" ignoreNetworkId={networkSelectedId} onValueChange={field.onChange}/>
                       </FormControl>
                       <FormMessage/>
                     </FormItem>

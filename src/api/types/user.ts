@@ -17,15 +17,18 @@ export namespace User {
   }
 
   export type LoginRequest = {
-    email: string,
-    password: string,
+    email: string;
+    name?: string;  // register only
+    password: string;
   }
 
   export type UpdateRequest = {
-    name: string,
+    avatar?: string;
+    name?: string;
   }
 
   export type SearchRequest = {
-    key: string,
+    ignore_network_id?: number | undefined;
+    key?: string;
   }
 }

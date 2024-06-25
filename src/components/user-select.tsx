@@ -22,6 +22,7 @@ import {AvatarFallbackByName} from "@/lib/utils+.tsx";
 import {CommandLoading} from "cmdk";
 
 interface UserSelectProps {
+  ignoreNetworkId?: number;
   className?: string;
   onValueChange?(value: string): void;
 }
@@ -100,7 +101,8 @@ export function UserSelect({...props}: UserSelectProps) {
     setTimer(setTimeout(() => {
       setTimer(null)
       userSearch({
-        key: value
+        key: value,
+        ignore_network_id: props.ignoreNetworkId || undefined,
       }).then(({data}) => {
         const arr = users
         data.list.forEach((u) => {

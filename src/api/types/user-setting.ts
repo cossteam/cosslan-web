@@ -3,7 +3,7 @@ export namespace UserSetting {
     id?: number
     user_id?: number
     name?: string
-    content: {
+    content?: {
       [key: string]: any
     };
     created_at?: string

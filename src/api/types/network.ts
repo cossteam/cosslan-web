@@ -14,6 +14,6 @@ export namespace Network {
   }
 
   export type IpRangeRandRequest = {
-    num: number
+    num?: number
   }
 }
