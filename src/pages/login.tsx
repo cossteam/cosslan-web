@@ -28,7 +28,7 @@ import {useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {userState} from "@/lib/state.ts";
 import {Loader2} from "lucide-react";
-import {userLogin, userReg} from "@/api/modules/user.ts";
+import {userLogin, userRegister} from "@/api/interfaces/user.ts";
 import {alerter} from "@/components/ui+/use-alert.ts";
 
 const Login = () => {
@@ -49,7 +49,8 @@ const Login = () => {
         required_error: "Please enter a password.",
       })
       .min(6)
-      .max(32),
+      .max(32)
+      .regex(/^[A-Za-z\d]{6,32}$/, "Please enter a valid password."),
     confirmPassword: z
       .custom<string>((val) => {
         if (!isReg) {
@@ -76,7 +77,7 @@ const Login = () => {
 
   const onSubmit = (data: LoginFormValues) => {
     setIsLoad(true);
-    (isReg ? userReg : userLogin)(data)
+    (isReg ? userRegister : userLogin)(data)
       .then(({data}) => {
         userState.setState(data)
         navigate("/manage");
@@ -115,7 +116,7 @@ const Login = () => {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-      <Card className="w-full max-w-sm max-sm:border-0">
+      <Card className="w-full max-w-sm max-sm:shadow-none max-sm:border-0">
         <CardHeader>
           <CardTitle className="text-2xl">{t(isReg ? 'user.register' : 'user.login')}</CardTitle>
           <CardDescription>

@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/form"
 import { Switch } from "@/components/ui/switch"
 import { toast } from "@/components/ui/use-toast"
-import {userSettingInfo, userSettingUpdate} from "@/api/modules/user-setting.ts";
+import {userSettingInfo, userSettingUpdate} from "@/api/interfaces/user-setting.ts";
 import {useEffect, useState} from "react";
 import utils from "@/lib/utils.ts";
 import {Loader2} from "lucide-react";

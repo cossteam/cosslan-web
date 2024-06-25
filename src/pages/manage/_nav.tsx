@@ -28,7 +28,7 @@ import {Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, Di
 import {Label} from "@/components/ui/label.tsx";
 import {Input} from "@/components/ui/input.tsx";
 import {RadioGroup, RadioGroupItem} from "@/components/ui/radio-group.tsx";
-import {networkCreate, networkIpv4Rand, networkList} from "@/api/modules/network.ts";
+import {networkCreate, networkIpRangeRand, networkList} from "@/api/interfaces/network.ts";
 import {Network} from "@/api/types/network.ts";
 import {AvatarFallbackByName} from "@/lib/utils+.tsx";
 
@@ -50,10 +50,10 @@ const ManageNav = ({
 
   const [networkOpen, setNetworkOpen] = React.useState(false)
   const [networkDialog, setNetworkDialog] = React.useState(false)
-  const [networkSelected, setNetworkSelected] = React.useState<Network.Info>({ipv4: 'Loading...', net_id: 0})
+  const [networkSelected, setNetworkSelected] = React.useState<Network.Info>({ip_range: 'Loading...', network_id: 0})
   const [networkItems, setNetworkItems] = React.useState<Network.Info[]>([])
-  const [networkIpv4s, setNetworkIpv4s] = React.useState<string[]>([])
-  const [networkFormData, setNetworkFormData] = React.useState({ipv4: '', name:'', load: false})
+  const [networkIpRanges, setNetworkIpRanges] = React.useState<string[]>([])
+  const [networkFormData, setNetworkFormData] = React.useState({ip_range: '', name:'', load: false})
 
   const [openUserAvatar, setOpenUserAvatar] = useState(false)
 
@@ -108,21 +108,21 @@ const ManageNav = ({
   useEffect(() => {
     userState.subscribe(setUserInfo)
     networkList().then(({data}) => {
-      setNetworkItems(data)
-      setNetworkSelected(data.find(({net_id}) => net_id === localState.getState().networkSelectedId) || data[0])
+      setNetworkItems(data.list)
+      setNetworkSelected(data.list.find(({network_id}) => network_id === localState.getState().networkSelectedId) || data.list[0])
     })
   }, []);
 
   useEffect(() => {
-    networkIpv4Rand({num: 18}).then(({data}) => {
-      setNetworkIpv4s(data)
-      setNetworkFormData({...networkFormData, ipv4: data[Math.floor(Math.random() * data.length)]})
+    networkIpRangeRand({num: 18}).then(({data}) => {
+      setNetworkIpRanges(data.list)
+      setNetworkFormData({...networkFormData, ip_range: data.list[Math.floor(Math.random() * data.list.length)]})
     })
   }, [networkDialog]);
 
   useEffect(() => {
-    if (networkSelected.net_id) {
-      localState.setState({networkSelectedId: networkSelected.net_id})
+    if (networkSelected.network_id) {
+      localState.setState({networkSelectedId: networkSelected.network_id})
     }
   }, [networkSelected]);
 
@@ -170,7 +170,7 @@ const ManageNav = ({
                 className="justify-between shrink-0 w-full border-0 rounded-none border-b pr-3"
               >
                 <div className="mr-2 max-w-full truncate opacity-80">
-                  Network: {networkSelected.name || networkSelected.ipv4}
+                  Network: {networkSelected.name || networkSelected.ip_range}
                 </div>
                 <CaretSortIcon className="ml-auto h-4 w-4 shrink-0 opacity-50"/>
               </Button>
@@ -183,7 +183,7 @@ const ManageNav = ({
                   <CommandGroup>
                     {networkItems.map((network) => (
                       <CommandItem
-                        key={network.net_id}
+                        key={network.network_id}
                         onSelect={() => {
                           setNetworkSelected(network)
                           setNetworkOpen(false)
@@ -191,12 +191,12 @@ const ManageNav = ({
                         className="text-sm"
                       >
                         <div className="truncate">
-                          {network.name || network.ipv4}
+                          {network.name || network.ip_range}
                         </div>
                         <CheckIcon
                           className={cn(
                             "ml-auto h-4 w-4 shrink-0",
-                            networkSelected.net_id === network.net_id
+                            networkSelected.network_id === network.network_id
                               ? "opacity-100"
                               : "opacity-0"
                           )}
@@ -241,14 +241,14 @@ const ManageNav = ({
                 </div>
                 <div className="space-y-4">
                   <Label htmlFor="name">IPv4 range</Label>
-                  <RadioGroup value={networkFormData.ipv4} onValueChange={(val) => {
-                    setNetworkFormData({...networkFormData, ipv4: val})
+                  <RadioGroup value={networkFormData.ip_range} onValueChange={(val) => {
+                    setNetworkFormData({...networkFormData, ip_range: val})
                   }}>
                     <div className="grid grid-cols-3 gap-x-4">
-                      {networkIpv4s.map((ipv4, key) => (
-                        <Label key={key} htmlFor={ipv4} className="flex items-center space-x-2 py-2.5">
-                          <RadioGroupItem value={ipv4} id={ipv4}/>
-                          <span>{ipv4}</span>
+                      {networkIpRanges.map((ip_range, key) => (
+                        <Label key={key} htmlFor={ip_range} className="flex items-center space-x-2 py-2.5">
+                          <RadioGroupItem value={ip_range} id={ip_range}/>
+                          <span>{ip_range}</span>
                         </Label>
                       ))}
                     </div>
@@ -310,10 +310,10 @@ const ManageNav = ({
             <PopoverTrigger asChild>
               <div className="flex flex-row justify-center items-center cursor-pointer">
                 <Avatar className="shrink-0 size-8">
-                  <AvatarImage src={userInfo.avatar} alt={userInfo.nickname}/>
-                  <AvatarFallbackByName name={userInfo.nickname || userInfo.email}/>
+                  <AvatarImage src={userInfo.avatar} alt={userInfo.name}/>
+                  <AvatarFallbackByName name={userInfo.name || userInfo.email}/>
                 </Avatar>
-                <span className="ml-2">{userInfo.nickname || 'Your Account'}</span>
+                <span className="ml-2">{userInfo.name || 'Your Account'}</span>
               </div>
             </PopoverTrigger>
             <PopoverContent sideOffset={12} className="w-auto">

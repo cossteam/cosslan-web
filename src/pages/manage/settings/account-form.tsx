@@ -15,22 +15,22 @@ import {
 import {Input} from "@/components/ui/input"
 import {userState} from "@/lib/state.ts";
 import {Switch} from "@/components/ui/switch.tsx";
-import {userSettingInfo, userSettingUpdate} from "@/api/modules/user-setting.ts";
+import {userSettingInfo, userSettingUpdate} from "@/api/interfaces/user-setting.ts";
 import {useEffect, useState} from "react";
-import {userUpdate} from "@/api/modules/user.ts";
+import {userUpdate} from "@/api/interfaces/user.ts";
 import {Loader2} from "lucide-react";
 import {toast} from "@/components/ui/use-toast.ts";
 import utils from "@/lib/utils.ts";
 
 
 const accountFormSchema = z.object({
-  nickname: z
+  name: z
     .string()
     .min(2, {
-      message: "Nickname must be at least 2 characters.",
+      message: "Name must be at least 2 characters.",
     })
     .max(30, {
-      message: "Nickname must not be longer than 30 characters.",
+      message: "Name must not be longer than 30 characters.",
     }),
   email: z
     .string({
@@ -48,7 +48,7 @@ export default function AccountForm() {
   const form = useForm<AccountFormValues>({
     resolver: zodResolver(accountFormSchema),
     defaultValues: {
-      nickname: '',
+      name: '',
       email: '',
       invite_approval: false,
     },
@@ -58,7 +58,7 @@ export default function AccountForm() {
     userState.subscribe(
       state => state,
       user => {
-        form.setValue("nickname", user.nickname || "")
+        form.setValue("name", user.name || "")
         form.setValue("email", user.email || "")
       },
       {
@@ -87,10 +87,10 @@ export default function AccountForm() {
       }
     })
     await userUpdate({
-      nickname: data.nickname
+      name: data.name
     }).then(({data}) => {
       userState.setState({
-        nickname: data.nickname
+        name: data.name
       })
     })
     setIsLoad(false)
@@ -105,15 +105,15 @@ export default function AccountForm() {
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
         <FormField
           control={form.control}
-          name="nickname"
+          name="name"
           render={({field}) => (
             <FormItem>
-              <FormLabel>Nickname</FormLabel>
+              <FormLabel>Name</FormLabel>
               <FormControl>
-                <Input placeholder="Your nickname" {...field} />
+                <Input placeholder="Your name" {...field} />
               </FormControl>
               <FormDescription>
-                This is the nickname that will be displayed on your profile.
+                This is the name that will be displayed on your profile.
               </FormDescription>
               <FormMessage/>
             </FormItem>

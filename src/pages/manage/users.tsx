@@ -30,7 +30,7 @@ import {z} from "zod";
 import {useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {Form, FormControl, FormField, FormItem, FormMessage} from "@/components/ui/form.tsx";
-import {networkUserInvite, networkUserList} from "@/api/modules/network-user.ts";
+import {networkUserInvite, networkUserList} from "@/api/interfaces/network-user.ts";
 import {NetworkUser} from "@/api/types/network-user.ts";
 import {UserSelect} from "@/components/user-select.tsx";
 import {localState} from "@/lib/state.ts";
@@ -67,7 +67,7 @@ const ManageUsers = () => {
   const onInviteSubmit = (data: InviteFormValues) => {
     setLoadInvite(true)
     networkUserInvite({
-      net_id: localState.getState().networkSelectedId,
+      network_id: localState.getState().networkSelectedId,
       user_id: data.user_id,
       role: data.role || 'member',
     }).then(() => {
@@ -77,9 +77,9 @@ const ManageUsers = () => {
         description: "The user has been invited to join the network.",
       })
       networkUserList({
-        net_id: localState.getState().networkSelectedId,
+        network_id: localState.getState().networkSelectedId,
       }).then(({data}) => {
-        setData(users = data);
+        setData(users = data.list);
       })
     }).catch(({msg}) => {
       alerter({
@@ -97,9 +97,9 @@ const ManageUsers = () => {
 
   useEffect(() => {
     networkUserList({
-      net_id: localState.getState().networkSelectedId,
+      network_id: localState.getState().networkSelectedId,
     }).then(({data}) => {
-      setData(users = data);
+      setData(users = data.list);
     })
   }, []);
 
@@ -133,9 +133,9 @@ const ManageUsers = () => {
         const user = row.original
         return (
           <div className="grid gap-1">
-            {user.user_nickname && (
+            {user.user_name && (
               <p className="text-sm font-medium leading-none">
-                {user.user_nickname}
+                {user.user_name}
               </p>
             )}
             <p className="text-sm text-muted-foreground">

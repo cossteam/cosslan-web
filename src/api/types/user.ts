@@ -2,7 +2,7 @@ export namespace User {
   export type Info = {
     user_id?: number
     email?: string
-    nickname?: string
+    name?: string
     avatar?: string
     token?: string
     created_at?: string
@@ -12,7 +12,7 @@ export namespace User {
   export type InfoSimple = {
     user_id?: number
     email?: string
-    nickname?: string
+    name?: string
     avatar?: string
   }
 
@@ -22,7 +22,7 @@ export namespace User {
   }
 
   export type UpdateRequest = {
-    nickname: string,
+    name: string,
   }
 
   export type SearchRequest = {

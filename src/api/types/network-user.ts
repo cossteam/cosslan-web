@@ -1,7 +1,7 @@
 export namespace NetworkUser {
   export type Info = {
     id?: number
-    net_id?: number
+    network_id?: number
     user_id?: number
     state?: string
     role?: string
@@ -10,16 +10,16 @@ export namespace NetworkUser {
   }
 
   export type InfoJoinUser = Info & {
-    user_nickname?: string
+    user_name?: string
     user_email?: string
   }
 
   export type ListRequest = {
-    net_id: number
+    network_id: number
   }
 
   export type InviteRequest = {
-    net_id: number
+    network_id: number
     user_id: string
     role: string
   }

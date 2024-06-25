@@ -3,7 +3,7 @@ import {twMerge} from "tailwind-merge"
 import React from "react";
 import {alerter} from "@/components/ui+/use-alert.ts";
 import {userState} from "@/lib/state.ts";
-import {userLogout} from "@/api/modules/user.ts";
+import {userLogout} from "@/api/interfaces/user.ts";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))

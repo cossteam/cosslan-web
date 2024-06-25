@@ -3,7 +3,9 @@ export namespace UserSetting {
     id?: number
     user_id?: number
     name?: string
-    content?: object
+    content: {
+      [key: string]: any
+    };
     created_at?: string
     updated_at?: string
   }
@@ -14,6 +16,8 @@ export namespace UserSetting {
 
   export type UpdateRequest = {
     name: string,
-    content: object,
+    content: {
+      [key: string]: any
+    };
   }
 }

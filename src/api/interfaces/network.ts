@@ -2,11 +2,11 @@ import http from "../index";
 import {Network} from "@/api/types/network";
 
 export const networkList = () => {
-  return http.get<Network.Info[]>('network/list')
+  return http.get<{ list: Network.Info[] }>('network/list')
 };
 
-export const networkIpv4Rand = (params: Network.Ipv4RandRequest) => {
-  return http.get<Network.Ipv4Rand>('network/ipv4_rand', params)
+export const networkIpRangeRand = (params: Network.IpRangeRandRequest) => {
+  return http.get<{ list: string[] }>('network/ip_range_rand', params)
 };
 
 export const networkCreate = (params: Network.CreateRequest) => {

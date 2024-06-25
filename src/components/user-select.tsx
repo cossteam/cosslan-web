@@ -17,7 +17,7 @@ import {
 import {useEffect, useState} from "react";
 import {User} from "@/api/types/user.ts";
 import {Avatar} from "@/components/ui/avatar.tsx";
-import {userSearch} from "@/api/modules/user.ts";
+import {userSearch} from "@/api/interfaces/user.ts";
 import {AvatarFallbackByName} from "@/lib/utils+.tsx";
 import {CommandLoading} from "cmdk";
 
@@ -57,18 +57,18 @@ export function UserSelect({...props}: UserSelectProps) {
             "h-8 w-8",
             avatarClassName
           )}>
-          <AvatarFallbackByName name={user.nickname || user.email || ''}/>
+          <AvatarFallbackByName name={user.name || user.email || ''}/>
         </Avatar>
         <div className="space-y-0.5">
           {simple ? (
             <p className="text-sm text-muted-foreground">
-              {user.nickname || user.email}
+              {user.name || user.email}
             </p>
           ) : (
             <>
-              {user.nickname && (
+              {user.name && (
                 <p className="text-sm font-medium leading-none">
-                  {user.nickname}
+                  {user.name}
                 </p>
               )}
               <p className="text-sm text-muted-foreground leading-none">
@@ -103,7 +103,7 @@ export function UserSelect({...props}: UserSelectProps) {
         key: value
       }).then(({data}) => {
         const arr = users
-        data.forEach((u) => {
+        data.list.forEach((u) => {
           if (!arr.find((s) => s.email === u.email)) {
             arr.push(u)
           }

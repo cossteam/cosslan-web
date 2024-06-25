@@ -4,7 +4,7 @@ import {Response} from "./types/_base";
 import {userState} from "@/lib/state";
 
 const config = {
-  baseURL: '/api',        // 所有的请求地址前缀部分
+  baseURL: '/api/v1',     // 所有的请求地址前缀部分
   timeout: 60000,         // 请求超时时间毫秒
   withCredentials: true,  // 异步请求携带cookie
 }
@@ -40,7 +40,10 @@ class RequestHttp {
      */
     this.service.interceptors.request.use(
       config => {
-        config.headers.Token = userState.getState().token
+        const {token} = userState.getState()
+        if (token) {
+          config.headers.Authorization = `Bearer ${token}`
+        }
         return config
       },
       error => {
