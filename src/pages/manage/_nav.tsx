@@ -1,4 +1,4 @@
-import {Link, useLocation} from "react-router-dom";
+import {Link, useLocation, useNavigate} from "react-router-dom";
 import {useTranslation} from "react-i18next";
 import {Menu as MenuIcon, X as CloseIcon, Orbit as LogoIcon, Loader2} from "lucide-react"
 
@@ -45,6 +45,7 @@ const ManageNav = ({
                    }: ManageNavProps) => {
   const {t} = useTranslation();
   const location = useLocation();
+  const navigate = useNavigate();
 
   const [userInfo, setUserInfo] = useState(userState.getState())
 
@@ -97,9 +98,9 @@ const ManageNav = ({
   const onNetworkCreate = () => {
     setNetworkFormData({...networkFormData, load: true})
     networkCreate(networkFormData as Network.CreateRequest).then(({data}) => {
+      setNetworkDialog(false)
       setNetworkItems([data, ...networkItems])
       setNetworkSelected(data)
-      setNetworkDialog(false)
     }).finally(() => {
       setNetworkFormData({...networkFormData, load: false})
     })
@@ -114,6 +115,9 @@ const ManageNav = ({
   }, []);
 
   useEffect(() => {
+    if (!networkDialog) {
+      return
+    }
     networkIpRangeRand({num: 18}).then(({data}) => {
       setNetworkIpRanges(data.list)
       setNetworkFormData({...networkFormData, ip_range: data.list[Math.floor(Math.random() * data.list.length)]})
@@ -121,10 +125,20 @@ const ManageNav = ({
   }, [networkDialog]);
 
   useEffect(() => {
-    if (networkSelected.network_id) {
-      localState.setState({networkSelectedId: networkSelected.network_id})
+    if (!networkSelected.network_id) {
+      return
     }
+    localState.setState({networkSelectedId: networkSelected.network_id})
   }, [networkSelected]);
+
+  const onNetworkSelected = (network: Network.Info) => {
+    setNetworkSelected(network)
+    if (location.pathname === '/manage') {
+      navigate(0)
+    } else {
+      navigate("/manage", {replace: true});
+    }
+  }
 
   return (
     <nav className="flex flex-col h-full">
@@ -185,7 +199,7 @@ const ManageNav = ({
                       <CommandItem
                         key={network.network_id}
                         onSelect={() => {
-                          setNetworkSelected(network)
+                          onNetworkSelected(network)
                           setNetworkOpen(false)
                         }}
                         className="text-sm"
