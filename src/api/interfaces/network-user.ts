@@ -1,8 +1,9 @@
 import http from "../index";
 import {NetworkUser} from "@/api/types/network-user.ts";
+import {Response} from "@/api/types/_base.ts";
 
 export const networkUserList = (params: NetworkUser.ListRequest) => {
-  return http.get<{ list: NetworkUser.InfoJoinUser[] }>('network_user/list', params)
+  return http.get<Response.List<NetworkUser.InfoJoinUser>>('network_user/list', params)
 };
 
 export const networkUserInvite = (params: NetworkUser.InviteRequest) => {

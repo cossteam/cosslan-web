@@ -73,6 +73,9 @@ const utils = {
    * @returns {*}
    */
   getObject(obj: any, key: string): any {
+    if (typeof obj === 'string' && /^\s*(\{|\[)/.test(obj)) {
+      obj = utils.jsonParse(obj);
+    }
     const keys = key.replace(/,/g, '|').replace(/\./g, '|').split('|');
     while (keys.length > 0) {
       const k = `${keys.shift()}`;

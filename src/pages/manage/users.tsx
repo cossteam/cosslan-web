@@ -66,6 +66,14 @@ const ManageUsers = () => {
     },
   })
 
+  const onRefreshNetworkUserList = () => {
+    networkUserList({
+      network_id: networkSelectedId,
+    }).then(({data}) => {
+      setData(users = data.list);
+    })
+  }
+
   const onInviteSubmit = (data: InviteFormValues) => {
     setLoadInvite(true)
     networkUserInvite({
@@ -74,14 +82,10 @@ const ManageUsers = () => {
       role: data.role || 'member',
     }).then(() => {
       setOpenInvite(false)
+      onRefreshNetworkUserList()
       toast({
         title: "User invited",
         description: "The user has been invited to join the network.",
-      })
-      networkUserList({
-        network_id: networkSelectedId,
-      }).then(({data}) => {
-        setData(users = data.list);
       })
     }).catch(({msg}) => {
       alerter({
@@ -101,11 +105,7 @@ const ManageUsers = () => {
     localState.subscribe(({networkSelectedId}) => {
       setNetworkSelectedId(networkSelectedId)
     })
-    networkUserList({
-      network_id: networkSelectedId,
-    }).then(({data}) => {
-      setData(users = data.list);
-    })
+    onRefreshNetworkUserList()
   }, []);
 
   const columns: ColumnDef<NetworkUser.InfoJoinUser>[] = [

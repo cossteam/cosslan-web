@@ -95,12 +95,18 @@ const ManageNav = ({
     },
   ]
 
+  const onRefreshNetworkList = () => {
+    networkList().then(({data}) => {
+      setNetworkItems(data.list)
+      setNetworkSelected(data.list.find(({network_id}) => network_id === localState.getState().networkSelectedId) || data.list[0])
+    })
+  }
+
   const onNetworkCreate = () => {
     setNetworkFormData({...networkFormData, load: true})
-    networkCreate(networkFormData as Network.CreateRequest).then(({data}) => {
+    networkCreate(networkFormData).then(() => {
       setNetworkDialog(false)
-      setNetworkItems([data, ...networkItems])
-      setNetworkSelected(data)
+      onRefreshNetworkList()
     }).finally(() => {
       setNetworkFormData({...networkFormData, load: false})
     })
@@ -108,10 +114,7 @@ const ManageNav = ({
 
   useEffect(() => {
     userState.subscribe(setUserInfo)
-    networkList().then(({data}) => {
-      setNetworkItems(data.list)
-      setNetworkSelected(data.list.find(({network_id}) => network_id === localState.getState().networkSelectedId) || data.list[0])
-    })
+    onRefreshNetworkList()
   }, []);
 
   useEffect(() => {
