@@ -29,6 +29,7 @@ import {Form, FormControl, FormDescription, FormField, FormItem, FormLabel, Form
 import {toast} from "@/components/ui/use-toast.ts";
 import {Switch} from "@/components/ui/switch.tsx";
 import {TableViewOptions} from "@/components/table-view-options.tsx";
+import {TableTitleSubtitle} from "@/components/table-title-subtitle.tsx";
 
 let nodes: Node[] = [
   {
@@ -233,14 +234,7 @@ const ManageNodes = () => {
       cell: ({row}) => {
         const node = row.original
         return (
-          <div className="grid gap-1">
-            <p className="text-sm font-medium leading-none">
-              {node.hostname}
-            </p>
-            <p className="text-sm text-muted-foreground">
-              {node.email}
-            </p>
-          </div>
+          <TableTitleSubtitle title={node.hostname} subtitle={node.email}/>
         )
       },
     },
@@ -274,14 +268,7 @@ const ManageNodes = () => {
       cell: ({row}) => {
         const node = row.original
         return (
-          <div className="grid gap-1">
-            <div>
-              {node.version}
-            </div>
-            <div className="text-sm text-muted-foreground">
-              {node.os}
-            </div>
-          </div>
+          <TableTitleSubtitle title={node.version} subtitle={node.os}/>
         )
       },
     },

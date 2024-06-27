@@ -37,6 +37,7 @@ import {localState} from "@/lib/state.ts";
 import {toast} from "@/components/ui/use-toast.ts";
 import {alerter} from "@/components/ui+/use-alert.ts";
 import {TableViewOptions} from "@/components/table-view-options.tsx";
+import {TableTitleSubtitle} from "@/components/table-title-subtitle.tsx";
 
 let users: NetworkUser.InfoJoinUser[] = [];
 
@@ -137,16 +138,7 @@ const ManageUsers = () => {
       cell: ({row}) => {
         const user = row.original
         return (
-          <div className="grid gap-1">
-            {user.user_name && (
-              <p className="text-sm font-medium leading-none">
-                {user.user_name}
-              </p>
-            )}
-            <p className="text-sm text-muted-foreground">
-              {user.user_email}
-            </p>
-          </div>
+          <TableTitleSubtitle title={user.user_name} subtitle={user.user_email}/>
         )
       },
     },

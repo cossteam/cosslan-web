@@ -26,6 +26,7 @@ import {Label} from "@/components/ui/label.tsx";
 import {Icons} from "@/components/ui+/icons.tsx";
 import {RadioGroup, RadioGroupItem} from "@/components/ui/radio-group.tsx";
 import {TableViewOptions} from "@/components/table-view-options.tsx";
+import {TableTitleSubtitle} from "@/components/table-title-subtitle.tsx";
 
 let machines: Machine[] = [
   {
@@ -222,14 +223,7 @@ const ManageMachines = () => {
       cell: ({row}) => {
         const machine = row.original
         return (
-          <div className="grid gap-1">
-            <p className="text-sm font-medium leading-none">
-              {machine.name}
-            </p>
-            <p className="text-sm text-muted-foreground">
-              {machine.email}
-            </p>
-          </div>
+          <TableTitleSubtitle title={machine.name} subtitle={machine.email}/>
         )
       },
     },
@@ -243,14 +237,7 @@ const ManageMachines = () => {
       cell: ({row}) => {
         const machine = row.original
         return (
-          <div className="grid gap-1">
-            <div>
-              {machine.version}
-            </div>
-            <div className="text-sm text-muted-foreground">
-              {machine.os}
-            </div>
-          </div>
+          <TableTitleSubtitle title={machine.version} subtitle={machine.os}/>
         )
       },
     },

@@ -25,6 +25,7 @@ import {TableViewOptions} from "@/components/table-view-options.tsx";
 import {UserNotification} from "@/api/types/user-notification.ts";
 import {userNotificationList} from "@/api/interfaces/user-notification.ts";
 import utils from "@/lib/utils.ts";
+import {TableTitleSubtitle} from "@/components/table-title-subtitle.tsx";
 
 let notifications: UserNotification.Info[] = [];
 
@@ -78,14 +79,7 @@ const ManageNotifications = () => {
       cell: ({row}) => {
         const item = row.original
         return (
-          <div className="grid gap-1">
-            <p className="text-sm font-medium leading-none">
-              {item.title}
-            </p>
-            <p className="text-sm text-muted-foreground">
-              {item.network_name || item.network_ip_range}
-            </p>
-          </div>
+          <TableTitleSubtitle title={item.title} subtitle={item.network_name || item.network_ip_range}/>
         )
       },
     },
@@ -102,16 +96,7 @@ const ManageNotifications = () => {
       cell: ({row}) => {
         const user = row.original
         return (
-          <div className="grid gap-1">
-            {user.send_name && (
-              <p className="text-sm font-medium leading-none">
-                {user.send_name}
-              </p>
-            )}
-            <p className="text-sm text-muted-foreground">
-              {user.send_email}
-            </p>
-          </div>
+          <TableTitleSubtitle title={user.send_name} subtitle={user.send_email}/>
         )
       },
     },
