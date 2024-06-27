@@ -1,6 +1,6 @@
 import React, {useEffect} from "react";
 import {Button} from "@/components/ui/button.tsx";
-import {ChevronDown, Columns2, Copy, MoreHorizontal, Search} from "lucide-react";
+import {Copy, MoreHorizontal, Search} from "lucide-react";
 import {Input} from "@/components/ui/input.tsx";
 import {Separator} from "@/components/ui/separator.tsx";
 
@@ -12,7 +12,7 @@ import {
 
 import {Checkbox} from "@/components/ui/checkbox"
 import {
-  DropdownMenu, DropdownMenuCheckboxItem,
+  DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
@@ -25,6 +25,7 @@ import {Dialog, DialogContent, DialogHeader, DialogTitle} from "@/components/ui/
 import {Label} from "@/components/ui/label.tsx";
 import {Icons} from "@/components/ui+/icons.tsx";
 import {RadioGroup, RadioGroupItem} from "@/components/ui/radio-group.tsx";
+import {TableViewOptions} from "@/components/table-view-options.tsx";
 
 let machines: Machine[] = [
   {
@@ -307,7 +308,9 @@ const ManageMachines = () => {
   return (
     <>
       <Dialog open={addOpen} onOpenChange={setAddOpen}>
-        <DialogContent className="sm:max-w-md max-h-full sm:max-h-[90%] flex flex-col" onOpenAutoFocus={(event) => {event.preventDefault()}}>
+        <DialogContent className="sm:max-w-md max-h-full sm:max-h-[90%] flex flex-col" onOpenAutoFocus={(event) => {
+          event.preventDefault()
+        }}>
           <DialogHeader>
             <DialogTitle>Add device</DialogTitle>
           </DialogHeader>
@@ -406,13 +409,9 @@ const ManageMachines = () => {
         </div>
       ) : (
         <div className="space-y-6 p-6 md:p-10">
-          <header className="flex space-y-0.5 gap-2">
-            <div className="flex-grow">
-              <div className="flex justify-between items-center">
-                <div className="flex items-center">
-                  <h2 className="text-2xl font-bold tracking-tight">Machines</h2>
-                </div>
-              </div>
+          <header className="flex gap-2">
+            <div className="flex-grow space-y-0.5">
+              <h2 className="text-2xl font-bold tracking-tight">Machines</h2>
               <p className="text-muted-foreground">
                 Manage the devices connected to your network.
               </p>
@@ -441,34 +440,7 @@ const ManageMachines = () => {
                 }}
               />
             </div>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" className="ml-auto">
-                  <Columns2 className="mr-2 h-4 w-4"></Columns2>
-                  Columns
-                  <ChevronDown className="ml-2 h-4 w-4"/>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                {table
-                  .getAllColumns()
-                  .filter((column) => column.getCanHide())
-                  .map((column) => {
-                    return (
-                      <DropdownMenuCheckboxItem
-                        key={column.id}
-                        className="capitalize"
-                        checked={column.getIsVisible()}
-                        onCheckedChange={(value) =>
-                          column.toggleVisibility(value)
-                        }
-                      >
-                        {typeof column.columnDef.header === 'string' ? column.columnDef.header : column.id}
-                      </DropdownMenuCheckboxItem>
-                    )
-                  })}
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <TableViewOptions table={table}/>
           </div>
 
           <Separator className="my-6"/>

@@ -336,14 +336,14 @@ const ManageNav = ({
                   {userInfo.email}
                 </p>
               </div>
-              <div className="flex flex-col space-y-1 -mb-2">
-                <Button variant="ghost" asChild className="justify-start -mx-2" onClick={() => {
-                  setOpenUserAvatar(false)
-                  setTimeout(onClickMenu, 100)
-                }}>
-                  <Link to="/manage/settings">User settings</Link>
+              <div className="flex flex-col space-y-1 -mb-2" onClick={() => setOpenUserAvatar(false)}>
+                <Button variant="ghost" asChild className="justify-start -mx-2">
+                  <Link to="/manage/settings" onClick={onClickMenu}>User settings</Link>
                 </Button>
-                <Button variant="ghost" asChild className="justify-start -mx-2" onClick={() => setOpenUserAvatar(false)}>
+                <Button variant="ghost" asChild className="justify-start -mx-2">
+                  <Link to="/manage/notifications" onClick={onClickMenu}>Notifications</Link>
+                </Button>
+                <Button variant="ghost" asChild className="justify-start -mx-2">
                   <Link to="/logout" onClick={onLogout}>Logout</Link>
                 </Button>
               </div>

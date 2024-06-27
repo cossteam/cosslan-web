@@ -89,17 +89,14 @@ const machines: Machine[] = [
 const ManageOverview = () => {
   return (
     <div className="space-y-6 p-6 md:p-10">
-      <header className="flex space-y-0.5 gap-2">
-        <div className="flex-grow">
-          <div className="flex justify-between items-center">
-            <div className="flex items-center">
-              <h2 className="text-2xl font-bold tracking-tight">Overview</h2>
-            </div>
-          </div>
+      <header className="flex gap-2">
+        <div className="flex-grow space-y-0.5">
+          <h2 className="text-2xl font-bold tracking-tight">Overview</h2>
           <p className="text-muted-foreground">
             View traffic statistics and recent machines.
           </p>
         </div>
+        <div className="flex justify-end items-end"></div>
       </header>
       <div className="grid gap-4 md:grid-cols-2 md:gap-8 lg:grid-cols-4">
         <Card x-chunk="dashboard-01-chunk-0">

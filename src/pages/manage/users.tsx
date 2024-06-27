@@ -1,6 +1,6 @@
 import {useEffect, useMemo, useState} from "react";
 import {Button} from "@/components/ui/button.tsx";
-import {ChevronDown, ChevronRight, Columns2, ContactRound, Loader2, MoreHorizontal, Search, Stamp} from "lucide-react";
+import {ChevronRight, ContactRound, Loader2, MoreHorizontal, Search, Stamp} from "lucide-react";
 import {Input} from "@/components/ui/input.tsx";
 import {Separator} from "@/components/ui/separator.tsx";
 
@@ -12,7 +12,7 @@ import {
 
 import {Checkbox} from "@/components/ui/checkbox"
 import {
-  DropdownMenu, DropdownMenuCheckboxItem,
+  DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
@@ -36,6 +36,7 @@ import {UserSelect} from "@/components/user-select.tsx";
 import {localState} from "@/lib/state.ts";
 import {toast} from "@/components/ui/use-toast.ts";
 import {alerter} from "@/components/ui+/use-alert.ts";
+import {TableViewOptions} from "@/components/table-view-options.tsx";
 
 let users: NetworkUser.InfoJoinUser[] = [];
 
@@ -131,7 +132,7 @@ const ManageUsers = () => {
       enableHiding: false,
     },
     {
-      accessorKey: "name",
+      accessorKey: "user_name",
       header: "User",
       cell: ({row}) => {
         const user = row.original
@@ -220,17 +221,14 @@ const ManageUsers = () => {
 
   return (
     <div className="space-y-6 p-6 md:p-10">
-      <header className="flex space-y-0.5 gap-2">
-        <div className="flex-grow">
-          <div className="flex justify-between items-center">
-            <div className="flex items-center">
-              <h2 className="text-2xl font-bold tracking-tight">Users</h2>
-            </div>
-          </div>
+      <header className="flex gap-2">
+        <div className="flex-grow space-y-0.5">
+          <h2 className="text-2xl font-bold tracking-tight">Users</h2>
           <p className="text-muted-foreground">
             Manage the users in your network and their permissions.
           </p>
         </div>
+        <div className="flex justify-end items-end"></div>
       </header>
 
       <Dialog open={openInvite} onOpenChange={setOpenInvite}>
@@ -383,7 +381,6 @@ const ManageUsers = () => {
         </div>
       </div>
 
-
       <div className="mt-6 mb-6 flex justify-start gap-4">
         <div className="flex-1 relative">
           <Search className="absolute text-gray-400 h-full ml-3 w-5"/>
@@ -401,34 +398,7 @@ const ManageUsers = () => {
             }}
           />
         </div>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="ml-auto">
-              <Columns2 className="mr-2 h-4 w-4"></Columns2>
-              Columns
-              <ChevronDown className="ml-2 h-4 w-4"/>
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            {table
-              .getAllColumns()
-              .filter((column) => column.getCanHide())
-              .map((column) => {
-                return (
-                  <DropdownMenuCheckboxItem
-                    key={column.id}
-                    className="capitalize"
-                    checked={column.getIsVisible()}
-                    onCheckedChange={(value) =>
-                      column.toggleVisibility(value)
-                    }
-                  >
-                    {typeof column.columnDef.header === 'string' ? column.columnDef.header : column.id}
-                  </DropdownMenuCheckboxItem>
-                )
-              })}
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <TableViewOptions table={table}/>
       </div>
 
       <Separator className="my-6"/>
