@@ -30,6 +30,7 @@ import {toast} from "@/components/ui/use-toast.ts";
 import {Switch} from "@/components/ui/switch.tsx";
 import {TableViewOptions} from "@/components/table-view-options.tsx";
 import {TableTitleSubtitle} from "@/components/table-title-subtitle.tsx";
+import utils from "@/lib/utils.ts";
 
 let nodes: Node[] = [
   {
@@ -326,9 +327,7 @@ const ManageNodes = () => {
   return (
     <>
       <Dialog open={addOpen} onOpenChange={setAddOpen}>
-        <DialogContent className="sm:max-w-md max-h-full sm:max-h-[90%] flex flex-col" onOpenAutoFocus={(event) => {
-          event.preventDefault()
-        }}>
+        <DialogContent className="sm:max-w-md max-h-full sm:max-h-[90%] flex flex-col" onOpenAutoFocus={utils.preventDefault}>
           <DialogHeader>
             <DialogTitle>Add node</DialogTitle>
           </DialogHeader>

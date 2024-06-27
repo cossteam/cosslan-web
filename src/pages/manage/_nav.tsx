@@ -19,7 +19,7 @@ import {
 } from "@/components/ui/popover"
 import {Button} from "@/components/ui/button"
 import {useEffect, useState} from "react";
-import {cn, onLogout} from "@/lib/utils";
+import utils, {cn, onLogout} from "@/lib/utils";
 import {localState, userState} from "@/lib/state.ts";
 import * as React from "react";
 import {CaretSortIcon, CheckIcon, PlusCircledIcon} from "@radix-ui/react-icons";
@@ -95,10 +95,14 @@ const ManageNav = ({
     },
   ]
 
-  const onRefreshNetworkList = () => {
+  const onRefreshNetworkList = (selectLatest = false) => {
     networkList().then(({data}) => {
       setNetworkItems(data.list)
-      setNetworkSelected(data.list.find(({network_id}) => network_id === localState.getState().networkSelectedId) || data.list[0])
+      if (selectLatest) {
+        onNetworkSelected(data.list[0])
+      } else {
+        setNetworkSelected(data.list.find(({network_id}) => network_id === localState.getState().networkSelectedId) || data.list[0])
+      }
     })
   }
 
@@ -106,7 +110,7 @@ const ManageNav = ({
     setNetworkFormData({...networkFormData, load: true})
     networkCreate(networkFormData).then(() => {
       setNetworkDialog(false)
-      onRefreshNetworkList()
+      onRefreshNetworkList(true)
     }).finally(() => {
       setNetworkFormData({...networkFormData, load: false})
     })
@@ -241,7 +245,7 @@ const ManageNav = ({
               </Command>
             </PopoverContent>
           </Popover>
-          <DialogContent>
+          <DialogContent onOpenAutoFocus={utils.preventDefault}>
             <DialogHeader>
               <DialogTitle>Create network</DialogTitle>
               <DialogDescription>
@@ -330,7 +334,7 @@ const ManageNav = ({
                   <AvatarImage src={userInfo.avatar} alt={userInfo.name}/>
                   <AvatarFallbackByName name={userInfo.name || userInfo.email}/>
                 </Avatar>
-                <span className="ml-2">{userInfo.name || 'Your Account'}</span>
+                <span className="ml-2 truncate">{userInfo.name || 'Your Account'}</span>
               </div>
             </PopoverTrigger>
             <PopoverContent sideOffset={12} className="w-auto">

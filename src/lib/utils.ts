@@ -532,6 +532,14 @@ const utils = {
     }
 
     return `${value.toFixed(2)}${units[unitIndex]}`;
+  },
+
+  /**
+   * 阻止默认事件
+   * @param event
+   */
+  preventDefault(event: Event) {
+    event.preventDefault();
   }
 };
 

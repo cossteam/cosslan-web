@@ -224,9 +224,7 @@ const ManageUsers = () => {
       </header>
 
       <Dialog open={openInvite} onOpenChange={setOpenInvite}>
-        <DialogContent className="sm:max-w-md max-h-full sm:max-h-[90%] flex flex-col" onOpenAutoFocus={(event) => {
-          event.preventDefault()
-        }}>
+        <DialogContent className="sm:max-w-md max-h-full sm:max-h-[90%] flex flex-col" onOpenAutoFocus={utils.preventDefault}>
           <DialogHeader>
             <DialogTitle>Invite external user</DialogTitle>
           </DialogHeader>

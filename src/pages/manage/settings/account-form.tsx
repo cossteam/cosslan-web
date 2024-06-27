@@ -89,7 +89,7 @@ export default function AccountForm() {
     })
     await userUpdate({
       name: data.name
-    }).then(({data}) => {
+    }).then(() => {
       userState.setState({
         name: data.name
       })

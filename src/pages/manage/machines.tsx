@@ -27,6 +27,7 @@ import {Icons} from "@/components/ui+/icons.tsx";
 import {RadioGroup, RadioGroupItem} from "@/components/ui/radio-group.tsx";
 import {TableViewOptions} from "@/components/table-view-options.tsx";
 import {TableTitleSubtitle} from "@/components/table-title-subtitle.tsx";
+import utils from "@/lib/utils.ts";
 
 let machines: Machine[] = [
   {
@@ -295,9 +296,7 @@ const ManageMachines = () => {
   return (
     <>
       <Dialog open={addOpen} onOpenChange={setAddOpen}>
-        <DialogContent className="sm:max-w-md max-h-full sm:max-h-[90%] flex flex-col" onOpenAutoFocus={(event) => {
-          event.preventDefault()
-        }}>
+        <DialogContent className="sm:max-w-md max-h-full sm:max-h-[90%] flex flex-col" onOpenAutoFocus={utils.preventDefault}>
           <DialogHeader>
             <DialogTitle>Add device</DialogTitle>
           </DialogHeader>
