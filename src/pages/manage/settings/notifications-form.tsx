@@ -41,8 +41,9 @@ export default function NotificationsForm() {
     userSettingInfo({
       name: "notification"
     }).then(({data}) => {
-      form.setValue("marketing_emails", !!utils.getObject(data.content, 'marketing_emails'))
-      form.setValue("security_emails", !!utils.getObject(data.content, 'security_emails'))
+      const content = utils.jsonParse(data.content)
+      form.setValue("marketing_emails", !!utils.getObject(content, 'marketing_emails'))
+      form.setValue("security_emails", !!utils.getObject(content, 'security_emails'))
     }).finally(() => {
       setIsLoad(false)
     })
@@ -55,10 +56,10 @@ export default function NotificationsForm() {
     setIsLoad(true)
     await userSettingUpdate({
       name: "notification",
-      content: {
+      content: utils.jsonStringify({
         marketing_emails: data.marketing_emails,
         security_emails: data.security_emails,
-      }
+      })
     })
     setIsLoad(false)
     toast({

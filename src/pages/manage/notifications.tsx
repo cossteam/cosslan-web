@@ -188,6 +188,7 @@ const ManageNotifications = () => {
               setData(notifications.filter(notification => {
                 return (
                   notification.title?.toLowerCase().includes(value.toLowerCase()) ||
+                  notification.network_ip_range?.toLowerCase().includes(value.toLowerCase()) ||
                   notification.network_name?.toLowerCase().includes(value.toLowerCase()) ||
                   notification.type?.toLowerCase().includes(value.toLowerCase()) ||
                   notification.send_name?.toLowerCase().includes(value.toLowerCase()) ||

@@ -141,7 +141,7 @@ const utils = {
    * @param defaultVal
    * @returns {*}
    */
-  jsonParse(str: string, defaultVal?: any): any {
+  jsonParse(str: any, defaultVal?: any): any {
     if (str === null) {
       return defaultVal ? defaultVal : {};
     }

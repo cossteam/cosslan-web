@@ -10,9 +10,7 @@ export namespace UserNotification {
     send_email?: string
     type?: string
     title?: string
-    content?: {
-      [key: string]: any
-    };
+    content?: string;
     read_at?: string
     created_at?: string
     updated_at?: string

@@ -69,7 +69,8 @@ export default function AccountForm() {
     userSettingInfo({
       name: "account"
     }).then(({data}) => {
-      form.setValue("invite_approval", !!utils.getObject(data.content, 'invite_approval'))
+      const content = utils.jsonParse(data.content)
+      form.setValue("invite_approval", !!utils.getObject(content, 'invite_approval'))
     }).finally(() => {
       setIsLoad(false)
     })
@@ -82,9 +83,9 @@ export default function AccountForm() {
     setIsLoad(true)
     await userSettingUpdate({
       name: "account",
-      content: {
+      content: utils.jsonStringify({
         invite_approval: data.invite_approval
-      }
+      })
     })
     await userUpdate({
       name: data.name
