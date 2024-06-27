@@ -17,7 +17,7 @@ import {Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectVal
 import {LanguageTool, LanguageList} from "@/components/language.tsx";
 import {ThemeList, ThemeTool} from "@/components/theme.tsx";
 import {localState} from "@/lib/state.ts";
-import {useToast} from "@/components/ui/use-toast.ts";
+import {toast} from "sonner";
 
 const appearanceFormSchema = z.object({
   language: z.enum(['', ...LanguageList.map((item) => item.type)], {
@@ -32,8 +32,6 @@ const appearanceFormSchema = z.object({
 type AppearanceFormValues = z.infer<typeof appearanceFormSchema>
 
 export default function AppearanceForm() {
-  const { toast } = useToast()
-
   const form = useForm<AppearanceFormValues>({
     resolver: zodResolver(appearanceFormSchema),
     defaultValues: {
@@ -45,8 +43,8 @@ export default function AppearanceForm() {
   function onSubmit(data: AppearanceFormValues) {
     ThemeTool.setTheme(data.theme);
     LanguageTool.setLanguage(data.language);
-    toast({
-      description: "Update successful.",
+    toast("Success", {
+      description: "Appearance updated successfully.",
     })
   }
 

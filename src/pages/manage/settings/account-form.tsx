@@ -19,7 +19,7 @@ import {userSettingInfo, userSettingUpdate} from "@/api/interfaces/user-setting.
 import {useEffect, useState} from "react";
 import {userUpdate} from "@/api/interfaces/user.ts";
 import {Loader2} from "lucide-react";
-import {toast} from "@/components/ui/use-toast.ts";
+import {toast} from "sonner";
 import utils from "@/lib/utils.ts";
 
 
@@ -95,9 +95,8 @@ export default function AccountForm() {
       })
     })
     setIsLoad(false)
-    toast({
-      title: "Account updated.",
-      description: "success",
+    toast("Success", {
+      description: "Account updated successfully.",
     })
   }
 

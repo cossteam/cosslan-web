@@ -1,8 +1,8 @@
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
-import { z } from "zod"
+import {zodResolver} from "@hookform/resolvers/zod"
+import {useForm} from "react-hook-form"
+import {z} from "zod"
 
-import { Button } from "@/components/ui/button"
+import {Button} from "@/components/ui/button"
 import {
   Form,
   FormControl,
@@ -11,8 +11,8 @@ import {
   FormItem,
   FormLabel,
 } from "@/components/ui/form"
-import { Switch } from "@/components/ui/switch"
-import { toast } from "@/components/ui/use-toast"
+import {Switch} from "@/components/ui/switch"
+import {toast} from "sonner"
 import {userSettingInfo, userSettingUpdate} from "@/api/interfaces/user-setting.ts";
 import {useEffect, useState} from "react";
 import utils from "@/lib/utils.ts";
@@ -62,9 +62,8 @@ export default function NotificationsForm() {
       })
     })
     setIsLoad(false)
-    toast({
-      title: "Account updated.",
-      description: "success",
+    toast("Success", {
+      description: "Notification updated successfully.",
     })
   }
 
@@ -77,7 +76,7 @@ export default function NotificationsForm() {
             <FormField
               control={form.control}
               name="marketing_emails"
-              render={({ field }) => (
+              render={({field}) => (
                 <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
                   <div className="space-y-0.5">
                     <FormLabel className="text-base">
@@ -99,7 +98,7 @@ export default function NotificationsForm() {
             <FormField
               control={form.control}
               name="security_emails"
-              render={({ field }) => (
+              render={({field}) => (
                 <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
                   <div className="space-y-0.5">
                     <FormLabel className="text-base">Security emails</FormLabel>

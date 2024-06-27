@@ -43,9 +43,8 @@ const ManageLayout = () => {
               "absolute top-0 left-0 right-0 bottom-0 z-20 bg-black/80 items-start justify-end hidden",
               navMask ? "md:flex" : ""
             )}
-          onClick={goBackToManage}
         >
-          <CloseIcon className="m-3 w-6 h-6 text-white cursor-pointer"/>
+          <CloseIcon className="m-3 w-6 h-6 text-white cursor-pointer transition-transform hover:rotate-90" onClick={goBackToManage}/>
         </div>
       </div>
       <div className="flex-1 overflow-auto mt-14 md:mt-0">
