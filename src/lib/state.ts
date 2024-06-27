@@ -28,7 +28,21 @@ const localState = create(
   ),
 )
 
-export {userState, localState};
+const routeState = create(
+  persist(
+    (): {
+      history: string[]
+    } => ({
+      history: [],
+    }),
+    {
+      name: 'store_route',
+      storage: createJSONStorage(() => localStorage),
+    },
+  ),
+)
+
+export {userState, localState, routeState};
 
 
 // ************************************************************* //

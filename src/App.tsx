@@ -6,7 +6,7 @@ import {Alerter} from "@/components/ui+/alerter.tsx";
 import {ThemeInit} from "@/components/theme.tsx";
 import {LanguageInit} from "@/components/language.tsx";
 import {useLocation, useNavigate} from "react-router-dom";
-import {userState} from "@/lib/state.ts";
+import {routeState, userState} from "@/lib/state.ts";
 import Router from './router';
 
 ThemeInit()
@@ -15,6 +15,15 @@ LanguageInit()
 const App = () => {
   const location = useLocation()
   const navigate = useNavigate();
+
+  const updateHistory = () => {
+    const {history} = routeState.getState()
+    if (history.length === 0 || history[0] !== location.pathname) {
+      routeState.setState({
+        history: [location.pathname, ...history].slice(0, 100),
+      })
+    }
+  }
 
   useEffect(() => {
     userState.subscribe(
@@ -28,7 +37,10 @@ const App = () => {
         fireImmediately: true,
       }
     )
+    updateHistory();
   })
+
+  useEffect(updateHistory, [location]);
 
   return (
     <>
