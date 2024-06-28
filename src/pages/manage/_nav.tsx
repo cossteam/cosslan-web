@@ -330,10 +330,15 @@ const ManageNav = ({
           <Popover open={openUserAvatar} onOpenChange={setOpenUserAvatar}>
             <PopoverTrigger asChild>
               <div className="flex flex-row justify-center items-center cursor-pointer">
-                <Avatar className="shrink-0 size-8">
-                  <AvatarImage src={userInfo.avatar} alt={userInfo.name}/>
-                  <AvatarFallbackByName name={userInfo.name || userInfo.email}/>
-                </Avatar>
+                <div className="relative shrink-0">
+                  <Avatar className="size-8">
+                    <AvatarImage src={userInfo.avatar} alt={userInfo.name}/>
+                    <AvatarFallbackByName name={userInfo.name || userInfo.email}/>
+                  </Avatar>
+                  {userInfo.notification_unread || 0 > 0 && (
+                    <div className="w-2 h-2 bg-blue-600 rounded absolute top-0 right-0"></div>
+                  )}
+                </div>
                 <span className="ml-2 truncate">{userInfo.name || 'Your Account'}</span>
               </div>
             </PopoverTrigger>
@@ -348,7 +353,12 @@ const ManageNav = ({
                   <Link to="/manage/settings" onClick={onClickMenu}>User settings</Link>
                 </Button>
                 <Button variant="ghost" asChild className="justify-start -mx-2">
-                  <Link to="/manage/notifications" onClick={onClickMenu}>Notifications</Link>
+                  <Link to="/manage/notifications" className="relative" onClick={onClickMenu}>
+                    Notifications
+                    {userInfo.notification_unread || 0 > 0 && (
+                      <div className="w-2 h-2 bg-blue-600 rounded absolute top-1 right-1"></div>
+                    )}
+                  </Link>
                 </Button>
                 <Button variant="ghost" asChild className="justify-start -mx-2">
                   <Link to="/logout" onClick={onLogout}>Logout</Link>

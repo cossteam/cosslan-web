@@ -1,8 +1,10 @@
 import React from "react";
 
-type IconProps = React.HTMLAttributes<SVGElement>
+type IconProps = React.HTMLAttributes<SVGElement> & {
+  type?: string;
+};
 
-export const Icons = {
+const Icons = {
   Linux: (props: IconProps) => (
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 24" {...props}>
       <path fillRule="evenodd" clipRule="evenodd" d="M6 3.5C6 2.67157 6.67157 2 7.5 2H27.5C28.3284 2 29 2.67157 29 3.5V20.5C29 21.3284 28.3284 22 27.5 22H7.5C6.67157 22 6 21.3284 6 20.5V3.5ZM8.96967 4.96967C9.26256 4.67678 9.73744 4.67678 10.0303 4.96967L13.5303 8.46967C13.8232 8.76256 13.8232 9.23744 13.5303 9.53033L10.0303 13.0303C9.73744 13.3232 9.26256 13.3232 8.96967 13.0303C8.67678 12.7374 8.67678 12.2626 8.96967 11.9697L11.9393 9L8.96967 6.03033C8.67678 5.73744 8.67678 5.26256 8.96967 4.96967ZM13 15.2C12.5582 15.2 12.2 15.5582 12.2 16C12.2 16.4418 12.5582 16.8 13 16.8H20.5C20.9418 16.8 21.3 16.4418 21.3 16C21.3 15.5582 20.9418 15.2 20.5 15.2H13Z" fill="currentColor"></path>
@@ -35,4 +37,23 @@ export const Icons = {
       <path fillRule="evenodd" clipRule="evenodd" d="M9 2C7.34315 2 6 3.34315 6 5V19C6 20.6569 7.34315 22 9 22H28C29.6569 22 31 20.6569 31 19V5C31 3.34315 29.6569 2 28 2H9ZM17 5C16.4477 5 16 5.44772 16 6V18C16 18.5523 16.4477 19 17 19H20C20.5523 19 21 18.5523 21 18V6C21 5.44772 20.5523 5 20 5H17ZM23 6C23 5.44772 23.4477 5 24 5H27C27.5523 5 28 5.44772 28 6V18C28 18.5523 27.5523 19 27 19H24C23.4477 19 23 18.5523 23 18V6ZM10 7C9.44772 7 9 7.44772 9 8C9 8.55228 9.44772 9 10 9H13C13.5523 9 14 8.55228 14 8C14 7.44772 13.5523 7 13 7H10ZM20 8.5C20 9.32843 19.3284 10 18.5 10C17.6716 10 17 9.32843 17 8.5C17 7.67157 17.6716 7 18.5 7C19.3284 7 20 7.67157 20 8.5ZM25.5 10C26.3284 10 27 9.32843 27 8.5C27 7.67157 26.3284 7 25.5 7C24.6716 7 24 7.67157 24 8.5C24 9.32843 24.6716 10 25.5 10Z" fill="currentColor"></path>
     </svg>
   ),
+}
+
+export function DeviceIcons(props: IconProps) {
+  switch (props.type) {
+    case "Linux":
+      return <Icons.Linux {...props} />;
+    case "Windows":
+      return <Icons.Windows {...props} />;
+    case "macOS":
+      return <Icons.macOS {...props} />;
+    case "iPhone":
+      return <Icons.iPhone {...props} />;
+    case "Android":
+      return <Icons.Android {...props} />;
+    case "Synology":
+      return <Icons.Synology {...props} />;
+    default:
+      return null;
+  }
 }

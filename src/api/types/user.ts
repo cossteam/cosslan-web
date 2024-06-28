@@ -7,6 +7,7 @@ export namespace User {
     token?: string
     created_at?: string
     updated_at?: string
+    notification_unread?: number
   }
 
   export type InfoSimple = {
