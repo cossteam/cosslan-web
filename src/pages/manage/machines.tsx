@@ -1,4 +1,4 @@
-import React, {useEffect} from "react";
+import React, {useEffect, useMemo, useState} from "react";
 import {Button} from "@/components/ui/button.tsx";
 import {Copy, Check, MoreHorizontal, Search, Loader2} from "lucide-react";
 import {Input} from "@/components/ui/input.tsx";
@@ -28,7 +28,9 @@ import {RadioGroup, RadioGroupItem} from "@/components/ui/radio-group.tsx";
 import {TableViewOptions} from "@/components/table-view-options.tsx";
 import {TableTitleSubtitle} from "@/components/table-title-subtitle.tsx";
 import utils, {cn} from "@/lib/utils.ts";
-import {machineCreateDevice} from "@/api/interfaces/machine.ts";
+import {networkMachineCreateDevice, networkMachineList} from "@/api/interfaces/network-machine.ts";
+import {NetworkMachine} from "@/api/types/network-machine.ts";
+import {localState} from "@/lib/state.ts";
 
 const devices: Device[] = [
   {
@@ -52,99 +54,6 @@ const devices: Device[] = [
   }
 ]
 
-let machines: Machine[] = [
-  {
-    "id": "INV003",
-    "name": "Sophia Smith",
-    "email": "sophia.smith@email.com",
-    "ip": "150.200.30.80",
-    "version": "2.10.1",
-    "os": "iOS 15.2.3",
-    "last_seen": "Jun 12, 3:45 PM GMT+8"
-  },
-  {
-    "id": "INV004",
-    "name": "Noah Williams",
-    "email": "noah.williams@email.com",
-    "ip": "120.90.70.25",
-    "version": "1.80.6",
-    "os": "Windows 11.0",
-    "last_seen": "Jun 15, 11:10 AM GMT+8"
-  },
-  {
-    "id": "INV005",
-    "name": "Emma Brown",
-    "email": "emma.brown@email.com",
-    "ip": "90.80.150.40",
-    "version": "2.1.5",
-    "os": "Android 12.1",
-    "last_seen": "Jun 14, 6:37 PM GMT+8"
-  },
-  {
-    "id": "INV006",
-    "name": "William Jones",
-    "email": "william.jones@email.com",
-    "ip": "200.180.50.70",
-    "version": "1.90.3",
-    "os": "Windows 10.0",
-    "last_seen": "Jun 13, 10:45 AM GMT+8"
-  },
-  {
-    "id": "INV007",
-    "name": "Isabella Davis",
-    "email": "isabella.davis@email.com",
-    "ip": "80.120.200.10",
-    "version": "2.0.4",
-    "os": "iOS 14.7.2",
-    "last_seen": "Jun 15, 2:18 PM GMT+8"
-  },
-  {
-    "id": "INV008",
-    "name": "James Wilson",
-    "email": "james.wilson@email.com",
-    "ip": "160.70.110.30",
-    "version": "1.75.2",
-    "os": "macOS 11.3.1",
-    "last_seen": "Jun 14, 4:59 PM GMT+8"
-  },
-  {
-    "id": "INV009",
-    "name": "Ava Taylor",
-    "email": "ava.taylor@email.com",
-    "ip": "70.160.90.20",
-    "version": "2.5.0",
-    "os": "Android 11.0",
-    "last_seen": "Jun 13, 8:26 AM GMT+8"
-  },
-  {
-    "id": "INV010",
-    "name": "Alexander Martinez",
-    "email": "alexander.martinez@email.com",
-    "ip": "110.140.180.60",
-    "version": "1.60.8",
-    "os": "Windows 8.1",
-    "last_seen": "Jun 15, 1:30 PM GMT+8"
-  },
-  {
-    "id": "INV011",
-    "name": "Olivia White",
-    "email": "olivia.white@email.com",
-    "ip": "140.100.70.90",
-    "version": "2.3.7",
-    "os": "iOS 13.6.1",
-    "last_seen": "Jun 16, 10:05 AM GMT+8"
-  },
-  {
-    "id": "INV012",
-    "name": "Ethan Lee",
-    "email": "ethan.lee@email.com",
-    "ip": "100.200.80.120",
-    "version": "1.70.5",
-    "os": "macOS 11.1.2",
-    "last_seen": "Jun 17, 3:45 PM GMT+8"
-  }
-];
-
 export type Device = {
   platform: string
   label?: string
@@ -154,31 +63,35 @@ export type Device = {
   url?: string
 }
 
-export type Machine = {
-  id: string
-  name: string
-  email: string
-  ip: string
-  version: string
-  os: string
-  last_seen: string
-}
-
+let machines: NetworkMachine.Info[] = [];
 
 const ManageMachines = () => {
-  const [data, setData] = React.useState(React.useMemo(() => machines, []));
-  const [rowSelection, setRowSelection] = React.useState({})
+  const [data, setData] = useState<NetworkMachine.Info[]>(useMemo(() => machines, []));
+  const [rowSelection, setRowSelection] = useState({})
 
   const [copyRight, setCopyRight] = React.useState(false)
   const [addOpen, setAddOpen] = React.useState(false)
   const [addData, setAddData] = React.useState<Device>(devices[0])
   const [addPlatform, setAddPlatform] = React.useState(devices[0].platform)
 
+  const onRefresh = () => {
+    networkMachineList({
+      network_id: localState.getState().networkSelectedId,
+      page: 1,
+    }).then(({data}) => {
+      setData(machines = data.list);
+    })
+  }
+
+  useEffect(() => {
+    onRefresh()
+  }, []);
+
   useEffect(() => {
     const index = Math.max(0, devices.findIndex((device) => device.platform === addPlatform))
     setAddData(devices[index])
     if (addOpen) {
-      machineCreateDevice({
+      networkMachineCreateDevice({
         platform: devices[index].platform,
       }).then(({data}) => {
         devices[index] = Object.assign({}, devices[index], data)
@@ -192,7 +105,7 @@ const ManageMachines = () => {
     }
   }, [addPlatform, addOpen]);
 
-  const columns: ColumnDef<Machine>[] = [
+  const columns: ColumnDef<NetworkMachine.Info>[] = [
     {
       id: "select",
       header: ({table}) => (
@@ -221,13 +134,19 @@ const ManageMachines = () => {
       cell: ({row}) => {
         const machine = row.original
         return (
-          <TableTitleSubtitle title={machine.name} subtitle={machine.email}/>
+          <TableTitleSubtitle title={machine.hostname} subtitle={machine.user_name || machine.user_email}/>
         )
       },
     },
     {
       accessorKey: "ip",
       header: "IP address",
+      cell: ({row}) => {
+        const machine = row.original
+        return (
+          <TableTitleSubtitle title={machine.public_ip} subtitle={machine.client_ip}/>
+        )
+      },
     },
     {
       accessorKey: "version",
@@ -235,13 +154,30 @@ const ManageMachines = () => {
       cell: ({row}) => {
         const machine = row.original
         return (
-          <TableTitleSubtitle title={machine.version} subtitle={machine.os}/>
+          <TableTitleSubtitle title={machine.version} subtitle={machine.kernel}/>
         )
       },
     },
     {
       accessorKey: "last_seen",
       header: "Last Seen",
+      cell: ({row}) => {
+        const machine = row.original
+        if (machine.state === 'connected') {
+          return (
+            <span className="text-sm text-gray-600 dark:text-gray-300" title={`Last Seen: ${machine.connected_at}`}>
+              <span className="inline-block w-2 h-2 rounded-full bg-green-300 dark:bg-green-400 mr-2"></span>
+              Connected
+            </span>
+          )
+        }
+        return (
+          <span className="text-sm text-gray-600 dark:text-gray-300" title={machine.state}>
+            <span className="inline-block w-2 h-2 rounded-full bg-gray-300 dark:bg-gray-500 mr-2"></span>
+            {machine.connected_at || machine.state}
+          </span>
+        )
+      },
     },
     {
       id: "actions",
@@ -259,7 +195,7 @@ const ManageMachines = () => {
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
               <DropdownMenuItem
-                onClick={() => navigator.clipboard.writeText(machine.id)}
+                onClick={() => navigator.clipboard.writeText(`${machine.id}`)}
               >
                 Copy ID
               </DropdownMenuItem>
@@ -395,10 +331,13 @@ const ManageMachines = () => {
                   const {value} = e.target;
                   setData(machines.filter(machine => {
                     return (
-                      machine.name.toLowerCase().includes(value.toLowerCase()) ||
-                      machine.email.toLowerCase().includes(value.toLowerCase()) ||
-                      machine.ip.toLowerCase().includes(value.toLowerCase()) ||
-                      machine.version.toLowerCase().includes(value.toLowerCase())
+                      machine.hostname?.toLowerCase().includes(value.toLowerCase()) ||
+                      machine.kernel?.toLowerCase().includes(value.toLowerCase()) ||
+                      machine.client_ip?.toLowerCase().includes(value.toLowerCase()) ||
+                      machine.public_ip?.toLowerCase().includes(value.toLowerCase()) ||
+                      machine.user_name?.toLowerCase().includes(value.toLowerCase()) ||
+                      machine.user_email?.toLowerCase().includes(value.toLowerCase()) ||
+                      machine.version?.toLowerCase().includes(value.toLowerCase())
                     );
                   }))
                 }}

@@ -1,4 +1,4 @@
-import React, {useEffect, useMemo, useState} from "react";
+import {useEffect, useMemo, useState} from "react";
 import {Button} from "@/components/ui/button.tsx";
 import {MoreHorizontal, Search} from "lucide-react";
 import {Input} from "@/components/ui/input.tsx";
@@ -31,7 +31,7 @@ let notifications: UserNotification.Info[] = [];
 
 const ManageNotifications = () => {
   const [data, setData] = useState<UserNotification.Info[]>(useMemo(() => notifications, []));
-  const [rowSelection, setRowSelection] = React.useState({})
+  const [rowSelection, setRowSelection] = useState({})
 
   const onRefresh = () => {
     userNotificationList({
