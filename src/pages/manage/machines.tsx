@@ -1,6 +1,6 @@
 import React, {useEffect} from "react";
 import {Button} from "@/components/ui/button.tsx";
-import {Copy, MoreHorizontal, Search} from "lucide-react";
+import {Copy, Check, MoreHorizontal, Search, Loader2} from "lucide-react";
 import {Input} from "@/components/ui/input.tsx";
 import {Separator} from "@/components/ui/separator.tsx";
 
@@ -23,11 +23,34 @@ import {
 import {DataTable} from "@/components/ui+/data-table.tsx";
 import {Dialog, DialogContent, DialogHeader, DialogTitle} from "@/components/ui/dialog";
 import {Label} from "@/components/ui/label.tsx";
-import {Icons} from "@/components/ui+/icons.tsx";
+import {DeviceIcons} from "@/components/ui+/icons.tsx";
 import {RadioGroup, RadioGroupItem} from "@/components/ui/radio-group.tsx";
 import {TableViewOptions} from "@/components/table-view-options.tsx";
 import {TableTitleSubtitle} from "@/components/table-title-subtitle.tsx";
-import utils from "@/lib/utils.ts";
+import utils, {cn} from "@/lib/utils.ts";
+import {machineCreateDevice} from "@/api/interfaces/machine.ts";
+
+const devices: Device[] = [
+  {
+    platform: 'Linux',
+  },
+  {
+    platform: 'Windows',
+  },
+  {
+    platform: 'macOS',
+  },
+  {
+    platform: 'iPhone',
+    label: 'iPhone & iPad',
+  },
+  {
+    platform: 'Android',
+  },
+  {
+    platform: 'Synology',
+  }
+]
 
 let machines: Machine[] = [
   {
@@ -122,6 +145,15 @@ let machines: Machine[] = [
   }
 ];
 
+export type Device = {
+  platform: string
+  label?: string
+  desc?: string
+  tip?: string
+  qr?: string
+  url?: string
+}
+
 export type Machine = {
   id: string
   name: string
@@ -137,63 +169,28 @@ const ManageMachines = () => {
   const [data, setData] = React.useState(React.useMemo(() => machines, []));
   const [rowSelection, setRowSelection] = React.useState({})
 
+  const [copyRight, setCopyRight] = React.useState(false)
   const [addOpen, setAddOpen] = React.useState(false)
-  const [addData, setAddData] = React.useState({desc: '', tip: '', qr: '', url: ''})
-  const [addOs, setAddOs] = React.useState('macOS')
+  const [addData, setAddData] = React.useState<Device>(devices[0])
+  const [addPlatform, setAddPlatform] = React.useState(devices[0].platform)
 
   useEffect(() => {
-    switch (addOs) {
-      case 'Linux':
-        setAddData({
-          desc: 'Use our installation script on the system terminal.',
-          tip: 'Requires Linux kernel 4.4 or later.',
-          qr: '',
-          url: 'curl -fsSL https://domain.com/install.sh | sh',
+    const index = Math.max(0, devices.findIndex((device) => device.platform === addPlatform))
+    setAddData(devices[index])
+    if (addOpen) {
+      machineCreateDevice({
+        platform: devices[index].platform,
+      }).then(({data}) => {
+        devices[index] = Object.assign({}, devices[index], data)
+      }).catch(({msg}) => {
+        devices[index] = Object.assign({}, devices[index], {
+          tip: `<u class="text-red-700">${msg || 'An error occurred while creating the device. Please try again later.'}</u>`
         })
-        break;
-      case 'Windows':
-        setAddData({
-          desc: 'Download client from our website.',
-          tip: 'Requires Windows 10 or later.',
-          qr: '',
-          url: 'https://domain.com/download/windows',
-        })
-        break;
-      case 'macOS':
-        setAddData({
-          desc: 'Download client from the Mac App Store.',
-          tip: 'Requires macOS Catalina 10.15 or later.',
-          qr: '',
-          url: 'https://apps.apple.com/ca/app/id2212312313?mt=12'
-        })
-        break;
-      case 'iPhone':
-        setAddData({
-          desc: 'Scan the QR code, copy the download link.',
-          tip: 'Requires iOS 15.0 or later.',
-          qr: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAZAAAAGQAQMAAAC6caSPAAAABlBMVEX///8AAABVwtN+AAABm0lEQVR42u3aPXKDQAyGYTEpUuYIHCVHg6P5KD5CSheMv6wlkcXEbYiYeb8GZsXTMZr9M0IIIX+XUT1fNt23Q/syBFKZzPn2FmPvutqklotp2ZYhkOJk0CN9bOx/ei9DIP9Gpnv/bT+lBQI5J8khyYkZBHIisp0+DLq116mRXRkCqU52Kz6fJy/2sc6TfwKBVCYvM72uQyDHkSEmxfsttcujD19zb8J7MgRSmeQqT4u/R92iJ0vXHPIyBFKaRM+Wx7mTWOU1It1slBkEUpvY4D3bP8uNijl+/kbUhpxogUCKk6j3FV8m23gGAjmeSC/v7mRPzi01CKQuGdcGnM3Y41tqej6wa4FA6hJf5WXdft/tsfYOgZyAjJpjFy4mxY3Ew9rQmlueRkMgdclzJm1WfDmdHiCQg8n+oHiQdufIsw85h0Aqk+3lndy7mN/k8c/WeTIEUpzEWBC19HlyBAI5Helt3OOXKNY2DoGch/STkTiNzkVgliGQ40ifXewWfl7WPR6LGQRSmfQ4WW+pBbH1wO5RhkDqEkIIITXyDQFcqKG6y190AAAAAElFTkSuQmCC',
-          url: 'https://apps.apple.com/ca/app/id2212312313?mt=12'
-        })
-        break;
-      case 'Android':
-        setAddData({
-          desc: 'Scan the QR code, copy the download link.',
-          tip: 'Requires Android 8.0 or later.',
-          qr: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAZAAAAGQAQMAAAC6caSPAAAABlBMVEX///8AAABVwtN+AAABm0lEQVR42u3aPXKDQAyGYTEpUuYIHCVHg6P5KD5CSheMv6wlkcXEbYiYeb8GZsXTMZr9M0IIIX+XUT1fNt23Q/syBFKZzPn2FmPvutqklotp2ZYhkOJk0CN9bOx/ei9DIP9Gpnv/bT+lBQI5J8khyYkZBHIisp0+DLq116mRXRkCqU52Kz6fJy/2sc6TfwKBVCYvM72uQyDHkSEmxfsttcujD19zb8J7MgRSmeQqT4u/R92iJ0vXHPIyBFKaRM+Wx7mTWOU1It1slBkEUpvY4D3bP8uNijl+/kbUhpxogUCKk6j3FV8m23gGAjmeSC/v7mRPzi01CKQuGdcGnM3Y41tqej6wa4FA6hJf5WXdft/tsfYOgZyAjJpjFy4mxY3Ew9rQmlueRkMgdclzJm1WfDmdHiCQg8n+oHiQdufIsw85h0Aqk+3lndy7mN/k8c/WeTIEUpzEWBC19HlyBAI5Helt3OOXKNY2DoGch/STkTiNzkVgliGQ40ifXewWfl7WPR6LGQRSmfQ4WW+pBbH1wO5RhkDqEkIIITXyDQFcqKG6y190AAAAAElFTkSuQmCC',
-          url: 'https://play.google.com/store/apps/details?id=com.domain.ipn'
-        })
-        break;
-      case 'Synology':
-        setAddData({
-          desc: 'Use our installation script on the system terminal.',
-          tip: 'Requires DSM 6.0 or later.',
-          qr: '',
-          url: 'curl -fsSL https://domain.com/install.sh | sh',
-        })
-        break;
+      }).finally(() => {
+        setAddData(devices[index])
+      })
     }
-
-  }, [addOs]);
+  }, [addPlatform, addOpen]);
 
   const columns: ColumnDef<Machine>[] = [
     {
@@ -302,84 +299,65 @@ const ManageMachines = () => {
           </DialogHeader>
           <div className="space-y-6 p-2 -m-2 mb-2 overflow-auto no-scrollbar">
             <div>To add a new device to your network.</div>
-            <RadioGroup value={addOs} onValueChange={setAddOs} defaultValue="macOS" className="flex flex-wrap">
-              <Label
-                htmlFor="linux"
-                className="flex items-center rounded-md border dark:border-gray-700 px-3 py-0 h-9 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary"
-              >
-                <RadioGroupItem value="linux" id="linux" className="peer sr-only"/>
-                <Icons.Linux className="mr-2 size-6"/> Linux
-              </Label>
-              <Label
-                htmlFor="Windows"
-                className="flex items-center rounded-md border dark:border-gray-700 px-3 py-0 h-9 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary"
-              >
-                <RadioGroupItem value="Windows" id="Windows" className="peer sr-only"/>
-                <Icons.Windows className="mr-2 size-6"/> Windows
-              </Label>
-              <Label
-                htmlFor="macOS"
-                className="flex items-center rounded-md border dark:border-gray-700 px-3 py-0 h-9 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary"
-              >
-                <RadioGroupItem value="macOS" id="macOS" className="peer sr-only"/>
-                <Icons.macOS className="mr-2 size-6"/> macOS
-              </Label>
-              <Label
-                htmlFor="iPhone"
-                className="flex items-center rounded-md border dark:border-gray-700 px-3 py-0 h-9 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary"
-              >
-                <RadioGroupItem value="iPhone" id="iPhone" className="peer sr-only"/>
-                <Icons.iPhone className="mr-2 size-6"/> iPhone &amp; iPad
-              </Label>
-              <Label
-                htmlFor="Android"
-                className="flex items-center rounded-md border dark:border-gray-700 px-3 py-0 h-9 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary"
-              >
-                <RadioGroupItem value="Android" id="Android" className="peer sr-only"/>
-                <Icons.Android className="mr-2 size-6"/> Android
-              </Label>
-              <Label
-                htmlFor="Synology"
-                className="flex items-center rounded-md border dark:border-gray-700 px-3 py-0 h-9 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary"
-              >
-                <RadioGroupItem value="Synology" id="Synology" className="peer sr-only"/>
-                <Icons.Synology className="mr-2 size-6"/> Synology
-              </Label>
+            <RadioGroup value={addPlatform} onValueChange={setAddPlatform} defaultValue={addPlatform} className="flex flex-wrap">
+              {devices.map((device) => (
+                <Label
+                  key={device.platform}
+                  htmlFor={device.platform}
+                  className="flex items-center rounded-md border dark:border-gray-700 px-3 py-0 h-9 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary"
+                >
+                  <RadioGroupItem value={device.platform} id={device.platform} className="peer sr-only"/>
+                  <DeviceIcons type={device.platform} className="mr-2 size-6"/> {device.label || device.platform}
+                </Label>
+              ))}
             </RadioGroup>
-            <div>
-              <p>{addData.desc}</p>
-              <div className="mt-6">
-                {addData.qr && (
-                  <div className="flex justify-start items-center mb-6">
-                    <div className="shrink-0">
-                      <img src={addData.qr} className="image-pixelated w-[140px] h-[140px]" alt="qrcode"/>
-                    </div>
-                  </div>
+            {addData.desc || addData.tip ? (
+              <div>
+                {addData.desc && (
+                  <p>{addData.desc}</p>
                 )}
-                <div className="flex items-center space-x-2">
-                  <div className="grid flex-1 gap-2">
-                    <Input value={addData.url} readOnly/>
-                  </div>
-                  <Button
-                    type="submit"
-                    size="sm"
-                    variant="secondary"
-                    className="px-3"
-                    onClick={() => {
-                      navigator.clipboard.writeText(addData.url).then(() => {
-                        console.log('Copied to clipboard')
-                      })
-                    }}
-                  >
-                    <span className="sr-only">Copy</span>
-                    <Copy className="h-4 w-4"/>
-                  </Button>
+                <div className="mt-6">
+                  {addData.qr && (
+                    <div className="flex justify-start items-center mb-6">
+                      <div className="shrink-0">
+                        <img src={addData.qr} className="image-pixelated w-[140px] h-[140px]" alt="qrcode"/>
+                      </div>
+                    </div>
+                  )}
+                  {addData.url && (
+                    <div className="flex items-center space-x-2">
+                      <div className="grid flex-1 gap-2">
+                        <Input value={addData.url} readOnly/>
+                      </div>
+                      <Button
+                        type="submit"
+                        size="sm"
+                        variant="secondary"
+                        className={
+                          cn("px-3", copyRight ? 'bg-green-600 hover:bg-green-600' : '')
+                        }
+                        onClick={() => {
+                          navigator.clipboard.writeText(addData.url || '').then(() => {
+                            setCopyRight(true)
+                            setTimeout(() => setCopyRight(false), 1200)
+                          })
+                        }}
+                      >
+                        <span className="sr-only">Copy</span>
+                        {copyRight ? <Check className="h-4 w-4"/> : <Copy className="h-4 w-4"/>}
+                      </Button>
+                    </div>
+                  )}
                 </div>
+                {addData.tip && (
+                  <p className="text-sm text-text-muted dark:text-gray-400 mt-2" dangerouslySetInnerHTML={{__html: addData.tip}}></p>
+                )}
               </div>
-              {addData.tip && (
-                <p className="text-sm text-text-muted dark:text-gray-400 mt-2">{addData.tip}</p>
-              )}
-            </div>
+            ) : (
+              <div className="flex justify-center items-center">
+                <Loader2 className="h-5 w-5 animate-spin"/>
+              </div>
+            )}
           </div>
         </DialogContent>
       </Dialog>
