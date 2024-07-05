@@ -146,7 +146,7 @@ const ManageMachines = () => {
       cell: ({row}) => {
         const machine = row.original
         return (
-          <TableTitleSubtitle title={machine.public_ip} subtitle={machine.client_ip}/>
+          <TableTitleSubtitle title={machine.client_ip} subtitle={machine.public_ip}/>
         )
       },
     },
