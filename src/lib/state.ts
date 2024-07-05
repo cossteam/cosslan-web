@@ -1,6 +1,7 @@
 import {create} from 'zustand';
 import {persist, createJSONStorage, subscribeWithSelector} from 'zustand/middleware'
 import {User} from "@/api/types/user.ts";
+import {Network} from "@/api/types/network.ts";
 
 const userState = create(
   subscribeWithSelector(persist(
@@ -14,12 +15,23 @@ const userState = create(
   ))
 )
 
+const networkState = create(
+  subscribeWithSelector(persist(
+    (): Network.Info => ({
+      network_id: 0,
+    }),
+    {
+      name: 'store_network',
+      storage: createJSONStorage(() => localStorage),
+    },
+  ))
+)
+
 const localState = create(
   persist(
     () => ({
       theme: '',
       language: '',
-      networkSelectedId: 0,
     }),
     {
       name: 'store_local',
@@ -42,7 +54,7 @@ const routeState = create(
   ),
 )
 
-export {userState, localState, routeState};
+export {userState, networkState, localState, routeState};
 
 
 // ************************************************************* //

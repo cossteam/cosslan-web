@@ -1,6 +1,6 @@
 export namespace Network {
   export type Info = {
-    network_id?: number
+    network_id: number
     user_id?: number
     ip_range?: string
     name?: string

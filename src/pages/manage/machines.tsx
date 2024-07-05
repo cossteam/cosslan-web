@@ -30,7 +30,7 @@ import {TableTitleSubtitle} from "@/components/table-title-subtitle.tsx";
 import utils, {cn} from "@/lib/utils.ts";
 import {networkMachineCreateDevice, networkMachineList} from "@/api/interfaces/network-machine.ts";
 import {NetworkMachine} from "@/api/types/network-machine.ts";
-import {localState} from "@/lib/state.ts";
+import {networkState} from "@/lib/state.ts";
 
 const devices: Device[] = [
   {
@@ -68,6 +68,7 @@ let machines: NetworkMachine.Info[] = [];
 const ManageMachines = () => {
   const [data, setData] = useState<NetworkMachine.Info[]>(useMemo(() => machines, []));
   const [rowSelection, setRowSelection] = useState({})
+  const [networkSelected, setNetworkSelected] = useState(networkState.getState());
 
   const [copyRight, setCopyRight] = React.useState(false)
   const [addOpen, setAddOpen] = React.useState(false)
@@ -76,7 +77,7 @@ const ManageMachines = () => {
 
   const onRefresh = () => {
     networkMachineList({
-      network_id: localState.getState().networkSelectedId,
+      network_id: networkSelected.network_id,
       page: 1,
     }).then(({data}) => {
       setData(machines = data.list);
@@ -84,6 +85,7 @@ const ManageMachines = () => {
   }
 
   useEffect(() => {
+    networkState.subscribe(setNetworkSelected)
     onRefresh()
   }, []);
 

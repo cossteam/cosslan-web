@@ -20,7 +20,7 @@ import {
 import {Button} from "@/components/ui/button"
 import {useEffect, useState} from "react";
 import utils, {cn, onLogout} from "@/lib/utils";
-import {localState, userState} from "@/lib/state.ts";
+import {networkState, userState} from "@/lib/state.ts";
 import * as React from "react";
 import {CaretSortIcon, CheckIcon, PlusCircledIcon} from "@radix-ui/react-icons";
 import {Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList, CommandSeparator} from "@/components/ui/command.tsx";
@@ -101,7 +101,7 @@ const ManageNav = ({
       if (selectLatest) {
         onNetworkSelected(data.list[0])
       } else {
-        setNetworkSelected(data.list.find(({network_id}) => network_id === localState.getState().networkSelectedId) || data.list[0])
+        setNetworkSelected(data.list.find(({network_id}) => network_id === networkState.getState().network_id) || data.list[0])
       }
     })
   }
@@ -135,7 +135,7 @@ const ManageNav = ({
     if (!networkSelected.network_id) {
       return
     }
-    localState.setState({networkSelectedId: networkSelected.network_id})
+    networkState.setState(networkSelected)
   }, [networkSelected]);
 
   const onNetworkSelected = (network: Network.Info) => {

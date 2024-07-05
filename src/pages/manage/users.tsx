@@ -33,7 +33,7 @@ import {Form, FormControl, FormField, FormItem, FormMessage} from "@/components/
 import {networkUserInvite, networkUserList} from "@/api/interfaces/network-user.ts";
 import {NetworkUser} from "@/api/types/network-user.ts";
 import {UserSelect} from "@/components/user-select.tsx";
-import {localState} from "@/lib/state.ts";
+import {networkState} from "@/lib/state.ts";
 import {toast} from "@/components/ui/use-toast.ts";
 import {alerter} from "@/components/ui+/use-alert.ts";
 import {TableViewOptions} from "@/components/table-view-options.tsx";
@@ -51,7 +51,7 @@ const inviteFormSchema = z.object({
 type InviteFormValues = z.infer<typeof inviteFormSchema>
 
 const ManageUsers = () => {
-  const [networkSelectedId, setNetworkSelectedId] = useState(localState.getState().networkSelectedId)
+  const [networkSelected, setNetworkSelected] = useState(networkState.getState());
   const [inviteUserInfo, setInviteUserInfo] = useState(false)
   const [userManageInfo, setUserManageInfo] = useState(false)
 
@@ -69,7 +69,7 @@ const ManageUsers = () => {
 
   const onRefreshNetworkUserList = () => {
     networkUserList({
-      network_id: networkSelectedId,
+      network_id: networkSelected.network_id,
     }).then(({data}) => {
       setData(users = data.list);
     })
@@ -78,7 +78,7 @@ const ManageUsers = () => {
   const onInviteSubmit = (data: InviteFormValues) => {
     setLoadInvite(true)
     networkUserInvite({
-      network_id: networkSelectedId,
+      network_id: networkSelected.network_id,
       user_id: data.user_id,
       role: data.role || 'member',
     }).then(() => {
@@ -103,9 +103,7 @@ const ManageUsers = () => {
   }
 
   useEffect(() => {
-    localState.subscribe(({networkSelectedId}) => {
-      setNetworkSelectedId(networkSelectedId)
-    })
+    networkState.subscribe(setNetworkSelected)
     onRefreshNetworkUserList()
   }, []);
 
@@ -240,7 +238,7 @@ const ManageUsers = () => {
                   render={({field}) => (
                     <FormItem className="flex-auto">
                       <FormControl>
-                        <UserSelect className="w-full" ignoreNetworkId={networkSelectedId} onValueChange={field.onChange}/>
+                        <UserSelect className="w-full" ignoreNetworkId={networkSelected.network_id} onValueChange={field.onChange}/>
                       </FormControl>
                       <FormMessage/>
                     </FormItem>
