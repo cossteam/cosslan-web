@@ -367,6 +367,22 @@ const utils = {
   },
 
   /**
+   * 获取时间差（秒）
+   * @param date
+   * @param date2
+   * @returns {string}
+   */
+  secondDiff(date: any, date2: any = undefined): number {
+    if (typeof date2 === 'undefined') {
+      date2 = new Date().getTime();
+    }
+    if (typeof date === 'string') {
+      date = new Date(date).getTime();
+    }
+    return Math.round((date2 - date) / 1000);
+  },
+
+  /**
    * 补零
    * @param str
    * @param length

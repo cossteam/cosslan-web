@@ -165,7 +165,8 @@ const ManageMachines = () => {
       header: "Last Seen",
       cell: ({row}) => {
         const machine = row.original
-        if (machine.state === 'connected') {
+        const diff = utils.secondDiff(machine.connected_at)
+        if (diff < 60 * 1000) {
           return (
             <span className="text-sm text-gray-600 dark:text-gray-300" title={`Last Seen: ${machine.connected_at}`}>
               <span className="inline-block w-2 h-2 rounded-full bg-green-300 dark:bg-green-400 mr-2"></span>
@@ -174,9 +175,9 @@ const ManageMachines = () => {
           )
         }
         return (
-          <span className="text-sm text-gray-600 dark:text-gray-300" title={machine.state}>
+          <span className="text-sm text-gray-600 dark:text-gray-300">
             <span className="inline-block w-2 h-2 rounded-full bg-gray-300 dark:bg-gray-500 mr-2"></span>
-            {machine.connected_at || machine.state}
+            {machine.connected_at || '-'}
           </span>
         )
       },

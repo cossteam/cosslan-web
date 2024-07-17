@@ -12,7 +12,6 @@ export namespace NetworkMachine {
     network_id?: number;
     platform?: string;
     public_ip?: string;
-    state?: string;
     user_id?: number;
     user_email?: string;
     user_name?: string;
