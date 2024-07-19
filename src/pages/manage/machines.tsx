@@ -33,6 +33,7 @@ import {NetworkMachine} from "@/api/types/network-machine.ts";
 import {networkState} from "@/lib/state.ts";
 import {SSEClient} from "@/lib/sse.tsx";
 import {ResponseFormat} from "@/api";
+import {SecondDiff} from "@/lib/utils+.tsx";
 
 const devices: Device[] = [
   {
@@ -76,7 +77,6 @@ const ManageMachines = () => {
   const [addOpen, setAddOpen] = React.useState(false)
   const [addData, setAddData] = React.useState<Device>(devices[0])
   const [addPlatform, setAddPlatform] = React.useState(devices[0].platform)
-  const [nowTime, setNowTime] = React.useState(Date.now())
 
   const onRefresh = () => {
     networkMachineList({
@@ -90,12 +90,6 @@ const ManageMachines = () => {
   useEffect(() => {
     networkState.subscribe(setNetworkSelected)
     onRefresh()
-
-    const timeTick = setInterval(() => {
-      setNowTime(Date.now())
-    }, 1000);
-
-    return () => clearInterval(timeTick)
   }, []);
 
   useEffect(() => {
@@ -192,7 +186,7 @@ const ManageMachines = () => {
       header: "Last Seen",
       cell: ({row}) => {
         const machine = row.original
-        const diff = utils.secondDiff(machine.connected_at, nowTime)
+        const diff = SecondDiff(machine.connected_at)
         if (diff < 120) {
           return (
             <span className="text-sm text-gray-600 dark:text-gray-300" title={`Last Seen: ${machine.connected_at}`}>
