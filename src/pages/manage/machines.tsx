@@ -31,6 +31,8 @@ import utils, {cn} from "@/lib/utils.ts";
 import {networkMachineCreateDevice, networkMachineList} from "@/api/interfaces/network-machine.ts";
 import {NetworkMachine} from "@/api/types/network-machine.ts";
 import {networkState} from "@/lib/state.ts";
+import {SSEClient} from "@/lib/sse.tsx";
+import {ResponseFormat} from "@/api";
 
 const devices: Device[] = [
   {
@@ -74,6 +76,7 @@ const ManageMachines = () => {
   const [addOpen, setAddOpen] = React.useState(false)
   const [addData, setAddData] = React.useState<Device>(devices[0])
   const [addPlatform, setAddPlatform] = React.useState(devices[0].platform)
+  const [nowTime, setNowTime] = React.useState(Date.now())
 
   const onRefresh = () => {
     networkMachineList({
@@ -87,7 +90,31 @@ const ManageMachines = () => {
   useEffect(() => {
     networkState.subscribe(setNetworkSelected)
     onRefresh()
+
+    const timeTick = setInterval(() => {
+      setNowTime(Date.now())
+    }, 1000);
+
+    return () => clearInterval(timeTick)
   }, []);
+
+  useEffect(() => {
+    const ids = data.map(item => item.machine_id).sort().join(",");
+    if (ids) {
+      const sse = new SSEClient(`subscribe/stream?event=machine_state&name=${utils.sessionId()}&data=${ids}`, {
+        retry: true
+      })
+      sse.subscribe("machine_state", (_, event) => {
+        const eventData = utils.jsonParse(event.data)
+        data.some(item => {
+          if (item.machine_id === parseInt(eventData.machine_id)) {
+            item.connected_at = ResponseFormat(eventData.connected_at)
+          }
+        })
+      })
+      return () => sse.unsubscribe()
+    }
+  }, [data]);
 
   useEffect(() => {
     const index = Math.max(0, devices.findIndex((device) => device.platform === addPlatform))
@@ -165,11 +192,14 @@ const ManageMachines = () => {
       header: "Last Seen",
       cell: ({row}) => {
         const machine = row.original
-        const diff = utils.secondDiff(machine.connected_at)
-        if (diff < 60 * 1000) {
+        const diff = utils.secondDiff(machine.connected_at, nowTime)
+        if (diff < 120) {
           return (
             <span className="text-sm text-gray-600 dark:text-gray-300" title={`Last Seen: ${machine.connected_at}`}>
-              <span className="inline-block w-2 h-2 rounded-full bg-green-300 dark:bg-green-400 mr-2"></span>
+              <span className={cn(
+                'inline-block w-2 h-2 rounded-full bg-green-300 dark:bg-green-400 mr-2',
+                diff > 60 && 'bg-yellow-300 dark:bg-yellow-400',
+              )}></span>
               Connected
             </span>
           )

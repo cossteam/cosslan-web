@@ -9,22 +9,50 @@ const config = {
   withCredentials: true,  // 异步请求携带cookie
 }
 
-const responseFormat = (data: any) => {
+const ApiUrl = (url: string) => {
+  if (url.substring(0, 2) === "//" ||
+    url.substring(0, 7) === "http://" ||
+    url.substring(0, 8) === "https://" ||
+    url.substring(0, 6) === "ftp://" ||
+    url.substring(0, 1) === "/") {
+    return url;
+  }
+  url = config.baseURL + "/" + url
+  while (url.indexOf("/../") !== -1) {
+    url = url.replace(/\/(((?!\/).)*)\/\.\.\//, "/")
+  }
+  return url
+}
+
+const MainUrl = (url: string) => {
+  if (url.substring(0, 2) === "//" ||
+    url.substring(0, 7) === "http://" ||
+    url.substring(0, 8) === "https://" ||
+    url.substring(0, 6) === "ftp://" ||
+    url.substring(0, 1) === "/") {
+    return url;
+  }
+  return ApiUrl(`../${url}`)
+}
+
+const ResponseFormat = (data: any) => {
   if (typeof data === "string") {
     if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/.test(data)) {
       data = utils.formatDate("Y-m-d H:i:s", new Date(data))
     }
   } else if (utils.isArray(data)) {
-    return data.map((item: any) => responseFormat(item))
+    return data.map((item: any) => ResponseFormat(item))
   } else if (utils.isJson(data)) {
     for (const key in data) {
       if (Object.prototype.hasOwnProperty.call(data, key)) {
-        data[key] = responseFormat(data[key])
+        data[key] = ResponseFormat(data[key])
       }
     }
   }
   return data
 }
+
+export {ApiUrl, MainUrl, ResponseFormat}
 
 class RequestHttp {
   // 定义成员变量并指定类型
@@ -65,7 +93,7 @@ class RequestHttp {
         }
         if (data.code === 200) {
           // 请求成功
-          return responseFormat(data)
+          return ResponseFormat(data)
         }
         if ([301, 302].includes(data.code)) {
           // 重定向

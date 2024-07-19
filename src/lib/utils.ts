@@ -29,6 +29,17 @@ export function onLogout(event: React.MouseEvent<HTMLAnchorElement>) {
 
 const utils = {
   /**
+   * 会话ID
+   */
+  sessionId() {
+    if (utils._sessionId === "") {
+      utils._sessionId = utils.randomString(16)
+    }
+    return utils._sessionId
+  },
+  _sessionId:"",
+
+  /**
    * 简单判断IPv4地址
    * @param value
    */

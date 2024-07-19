@@ -38,7 +38,7 @@ const App = () => {
       }
     )
     updateHistory();
-  })
+  }, [])
 
   useEffect(updateHistory, [location]);
 
