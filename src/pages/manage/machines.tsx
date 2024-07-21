@@ -31,7 +31,7 @@ import utils, {cn} from "@/lib/utils.ts";
 import {networkMachineCreateDevice, networkMachineList} from "@/api/interfaces/network-machine.ts";
 import {NetworkMachine} from "@/api/types/network-machine.ts";
 import {networkState} from "@/lib/state.ts";
-import {SSEClient} from "@/lib/sse.tsx";
+import {SSE} from "@/lib/sse.tsx";
 import {ResponseFormat} from "@/api";
 import {SecondDiff} from "@/lib/utils+.tsx";
 
@@ -95,18 +95,18 @@ const ManageMachines = () => {
   useEffect(() => {
     const ids = data.map(item => item.machine_id).sort().join(",");
     if (ids) {
-      const sse = new SSEClient(`subscribe/stream?event=machine_state&name=${utils.sessionId()}&data=${ids}`, {
-        retry: true
+      const sse = SSE.create({
+        url: `subscribe/stream?event=machine_state&name=${utils.sessionId()}&data=${ids}`,
+        event: "machine_state",
+        onMessage: ({data:eventData}) => {
+          data.some(item => {
+            if (item.machine_id === parseInt(eventData.machine_id)) {
+              item.connected_at = ResponseFormat(eventData.connected_at)
+            }
+          })
+        },
       })
-      sse.subscribe("machine_state", (_, event) => {
-        const eventData = utils.jsonParse(event.data)
-        data.some(item => {
-          if (item.machine_id === parseInt(eventData.machine_id)) {
-            item.connected_at = ResponseFormat(eventData.connected_at)
-          }
-        })
-      })
-      return () => sse.unsubscribe()
+      return () => sse.remove()
     }
   }, [data]);
 

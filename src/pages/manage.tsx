@@ -1,7 +1,7 @@
 import ManageLayout from "@/pages/manage/_layout.tsx";
 import {userState} from "@/lib/state.ts";
 import {useEffect} from "react";
-import {SSEClient} from "@/lib/sse.tsx";
+import {SSE} from "@/lib/sse.tsx";
 import {userNotificationUnread} from "@/api/interfaces/user-notification.ts";
 import utils from "@/lib/utils.ts";
 
@@ -13,15 +13,17 @@ const Manage = () => {
       })
     })
 
-    const sse = new SSEClient(`subscribe/stream?event=notification_unread&name=${utils.sessionId()}&data=${userState.getState().user_id}`, {
-      retry: true
+    const sse = SSE.create({
+      url: `subscribe/stream?event=notification_unread&name=${utils.sessionId()}&data=${userState.getState().user_id}`,
+      event: "notification_unread",
+      expired: 180,
+      onMessage: ({data}) => {
+        userState.setState({
+          notification_unread: parseInt(data),
+        })
+      },
     })
-    sse.subscribe("notification_unread", (_, event) => {
-      userState.setState({
-        notification_unread: parseInt(event.data),
-      })
-    })
-    return () => sse.unsubscribe()
+    return () => sse.remove()
   }, [])
 
   return <ManageLayout/>
