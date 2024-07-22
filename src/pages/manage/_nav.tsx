@@ -67,10 +67,10 @@ const ManageNav = ({
       title: t("pages.manage.machines"),
       href: "/manage/machines",
     },
-    {
+    /*{
       title: t("pages.manage.nodes"),
       href: "/manage/nodes",
-    },
+    },*/
     {
       title: t("pages.manage.users"),
       href: "/manage/users",
